@@ -24,7 +24,7 @@ unsigned __stdcall ThreadFunc(void* Arg)
 int main()
 {
     HMODULE hDll = ::LoadLibrary(TEXT("TestDll.dll"));
-    // 네임맹글링 -> 이게실다면 extern "C"를 붙여야됨
+    // 네임맹글링 -> 이게 싫다면 extern "C"를 붙여야됨
     DllFunc = (DLL_FUNC)::GetProcAddress(hDll, "?DllFunc@@YAXH@Z");
 
     HANDLE hThread{};
