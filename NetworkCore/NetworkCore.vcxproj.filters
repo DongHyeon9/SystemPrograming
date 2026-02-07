@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Value.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Struct.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="PreProcess.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Header.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Type.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Enum.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreMinimal.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientApp.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerApp.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_TCP.h">
+      <Filter>SocketModel\1.TCPSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_TCP.h">
+      <Filter>SocketModel\1.TCPSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_UDP.h">
+      <Filter>SocketModel\2.UDPSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_UDP.h">
+      <Filter>SocketModel\2.UDPSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="AppBase.h">
+      <Filter>App</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CoreMinimal.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientApp.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerApp.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_TCP.cpp">
+      <Filter>SocketModel\1.TCPSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_TCP.cpp">
+      <Filter>SocketModel\1.TCPSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_UDP.cpp">
+      <Filter>SocketModel\2.UDPSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_UDP.cpp">
+      <Filter>SocketModel\2.UDPSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="AppBase.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{2178f7ee-8725-4e82-8bea-c4cd178036e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{d7ff7dd7-048d-42b7-8723-9178c4ecfc71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel">
+      <UniqueIdentifier>{f34dea8d-ff29-4e31-817d-356a935ab5dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\1.TCPSocket">
+      <UniqueIdentifier>{11abcc8d-8840-43d6-bf9c-a8f9928c39e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\2.UDPSocket">
+      <UniqueIdentifier>{72ce1143-3ddf-4bae-9243-5da0db2f9142}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
