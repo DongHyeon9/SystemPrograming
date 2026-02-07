@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="PerfectForwarding.cpp">
+      <Filter>1.PerfectForwarding</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreMinimal.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="RuleOfFive.cpp">
+      <Filter>2.RuleOfFive</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="1.PerfectForwarding">
+      <UniqueIdentifier>{c27cec6f-7bf7-40bc-ae2a-3442663f43af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{fa3a2915-f09b-4017-8cc4-a00ad2fe0105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2.RuleOfFive">
+      <UniqueIdentifier>{d4473083-d702-4e06-8576-a037aa22250e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PerfectForwarding.h">
+      <Filter>1.PerfectForwarding</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreMinimal.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="RuleOfFive.h">
+      <Filter>2.RuleOfFive</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
