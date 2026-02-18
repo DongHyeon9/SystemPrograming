@@ -21,15 +21,30 @@
   <ItemGroup>
     <ClInclude Include="AppBase.h" />
     <ClInclude Include="ClientApp.h" />
+    <ClInclude Include="Client_IOCP.h" />
+    <ClInclude Include="Client_NBS.h" />
+    <ClInclude Include="Client_Overlapped_Callback.h" />
+    <ClInclude Include="Client_Overlapped_Event.h" />
+    <ClInclude Include="Client_Select.h" />
     <ClInclude Include="Client_TCP.h" />
     <ClInclude Include="Client_UDP.h" />
+    <ClInclude Include="Client_WSAAsyncSelect.h" />
+    <ClInclude Include="Client_WSAEventSelect.h" />
     <ClInclude Include="CoreMinimal.h" />
     <ClInclude Include="Enum.h" />
+    <ClInclude Include="Functions.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="PreProcess.h" />
     <ClInclude Include="ServerApp.h" />
+    <ClInclude Include="Server_IOCP.h" />
+    <ClInclude Include="Server_NBS.h" />
+    <ClInclude Include="Server_Overlapped_Callback.h" />
+    <ClInclude Include="Server_Overlapped_Event.h" />
+    <ClInclude Include="Server_Select.h" />
     <ClInclude Include="Server_TCP.h" />
     <ClInclude Include="Server_UDP.h" />
+    <ClInclude Include="Server_WSAAsyncSelect.h" />
+    <ClInclude Include="Server_WSAEventSelect.h" />
     <ClInclude Include="Struct.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="Value.h" />
@@ -37,12 +52,27 @@
   <ItemGroup>
     <ClCompile Include="AppBase.cpp" />
     <ClCompile Include="ClientApp.cpp" />
+    <ClCompile Include="Client_IOCP.cpp" />
+    <ClCompile Include="Client_NBS.cpp" />
+    <ClCompile Include="Client_Overlapped_Callback.cpp" />
+    <ClCompile Include="Client_Overlapped_Event.cpp" />
+    <ClCompile Include="Client_Select.cpp" />
     <ClCompile Include="Client_TCP.cpp" />
     <ClCompile Include="Client_UDP.cpp" />
+    <ClCompile Include="Client_WSAAsyncSelect.cpp" />
+    <ClCompile Include="Client_WSAEventSelect.cpp" />
     <ClCompile Include="CoreMinimal.cpp" />
+    <ClCompile Include="Functions.cpp" />
     <ClCompile Include="ServerApp.cpp" />
+    <ClCompile Include="Server_IOCP.cpp" />
+    <ClCompile Include="Server_NBS.cpp" />
+    <ClCompile Include="Server_Overlapped_Callback.cpp" />
+    <ClCompile Include="Server_Overlapped_Event.cpp" />
+    <ClCompile Include="Server_Select.cpp" />
     <ClCompile Include="Server_TCP.cpp" />
     <ClCompile Include="Server_UDP.cpp" />
+    <ClCompile Include="Server_WSAAsyncSelect.cpp" />
+    <ClCompile Include="Server_WSAEventSelect.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

@@ -43,6 +43,51 @@
     <ClInclude Include="AppBase.h">
       <Filter>App</Filter>
     </ClInclude>
+    <ClInclude Include="Server_NBS.h">
+      <Filter>SocketModel\3.Non-BlockingSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_NBS.h">
+      <Filter>SocketModel\3.Non-BlockingSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_Select.h">
+      <Filter>SocketModel\4.SelectSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_Select.h">
+      <Filter>SocketModel\4.SelectSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_WSAEventSelect.h">
+      <Filter>SocketModel\5.WSAEventSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_WSAEventSelect.h">
+      <Filter>SocketModel\5.WSAEventSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_Overlapped_Event.h">
+      <Filter>SocketModel\6.Overlapped_Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_Overlapped_Event.h">
+      <Filter>SocketModel\6.Overlapped_Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_Overlapped_Callback.h">
+      <Filter>SocketModel\7.Overlapped_Callback</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_Overlapped_Callback.h">
+      <Filter>SocketModel\7.Overlapped_Callback</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_WSAAsyncSelect.h">
+      <Filter>SocketModel\8.WSAAsyncSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_WSAAsyncSelect.h">
+      <Filter>SocketModel\8.WSAAsyncSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_IOCP.h">
+      <Filter>SocketModel\9.IOCP</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_IOCP.h">
+      <Filter>SocketModel\9.IOCP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreMinimal.cpp">
@@ -69,6 +114,51 @@
     <ClCompile Include="AppBase.cpp">
       <Filter>App</Filter>
     </ClCompile>
+    <ClCompile Include="Client_NBS.cpp">
+      <Filter>SocketModel\3.Non-BlockingSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_NBS.cpp">
+      <Filter>SocketModel\3.Non-BlockingSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_Select.cpp">
+      <Filter>SocketModel\4.SelectSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_Select.cpp">
+      <Filter>SocketModel\4.SelectSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Functions.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_WSAEventSelect.cpp">
+      <Filter>SocketModel\5.WSAEventSelect</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_WSAEventSelect.cpp">
+      <Filter>SocketModel\5.WSAEventSelect</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_Overlapped_Event.cpp">
+      <Filter>SocketModel\6.Overlapped_Event</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_Overlapped_Event.cpp">
+      <Filter>SocketModel\6.Overlapped_Event</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_Overlapped_Callback.cpp">
+      <Filter>SocketModel\7.Overlapped_Callback</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_Overlapped_Callback.cpp">
+      <Filter>SocketModel\7.Overlapped_Callback</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_WSAAsyncSelect.cpp">
+      <Filter>SocketModel\8.WSAAsyncSelect</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_WSAAsyncSelect.cpp">
+      <Filter>SocketModel\8.WSAAsyncSelect</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_IOCP.cpp">
+      <Filter>SocketModel\9.IOCP</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_IOCP.cpp">
+      <Filter>SocketModel\9.IOCP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -85,6 +175,27 @@
     </Filter>
     <Filter Include="SocketModel\2.UDPSocket">
       <UniqueIdentifier>{72ce1143-3ddf-4bae-9243-5da0db2f9142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\3.Non-BlockingSocket">
+      <UniqueIdentifier>{ff7f41ff-9c33-41f7-bbc0-cb8724aec2bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\4.SelectSocket">
+      <UniqueIdentifier>{bdc5bf64-9c51-4b64-8138-a1086b8c0da9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\5.WSAEventSelect">
+      <UniqueIdentifier>{69c7b48c-f68c-4397-9823-c3a3b5d66110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\6.Overlapped_Event">
+      <UniqueIdentifier>{0bc96c78-2935-48d8-bf6d-f1ef1f5886f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\7.Overlapped_Callback">
+      <UniqueIdentifier>{324b321a-5b54-45c8-9f56-ab9cae59f7c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\8.WSAAsyncSelect">
+      <UniqueIdentifier>{020e5284-46bb-478a-b994-97cab2d78692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\9.IOCP">
+      <UniqueIdentifier>{353aa458-a851-4c6a-b738-e7c6c234e898}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
