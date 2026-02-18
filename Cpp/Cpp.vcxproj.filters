@@ -11,6 +11,9 @@
     <ClCompile Include="RuleOfFive.cpp">
       <Filter>2.RuleOfFive</Filter>
     </ClCompile>
+    <ClCompile Include="Inheritance.cpp">
+      <Filter>3.Inheritance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="1.PerfectForwarding">
@@ -22,6 +25,9 @@
     <Filter Include="2.RuleOfFive">
       <UniqueIdentifier>{d4473083-d702-4e06-8576-a037aa22250e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3.Inheritance">
+      <UniqueIdentifier>{91e5aef4-12a1-467b-8253-744d303a6c65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PerfectForwarding.h">
@@ -32,6 +38,9 @@
     </ClInclude>
     <ClInclude Include="RuleOfFive.h">
       <Filter>2.RuleOfFive</Filter>
+    </ClInclude>
+    <ClInclude Include="Inheritance.h">
+      <Filter>3.Inheritance</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -23,6 +23,9 @@
 #include <condition_variable>
 #include <future>
 
+// error C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include <WinSock2.h>
 #include <winsock.h>
 #include <WS2tcpip.h>

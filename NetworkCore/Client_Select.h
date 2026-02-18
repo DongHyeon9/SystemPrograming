@@ -1,8 +1,7 @@
 #pragma once
 #include "AppBase.h"
 
-// 블로킹 방식의 TCP 소켓모델
-class NETWORK_API Server_TCP : public AppBase<Server_TCP>
+class NETWORK_API Client_Select : public AppBase<Client_Select>
 {
 public:
 	bool Initialize()override;
@@ -11,7 +10,5 @@ public:
 
 private:
 	SOCKET socket{};
-
-	SOCKET clientSocket{};
 };
 

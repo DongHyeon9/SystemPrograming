@@ -1,14 +1,14 @@
-#include "Client_TCP.h"
+#include "Client_WSAAsyncSelect.h"
 
-bool Client_TCP::Initialize()
+bool Client_WSAAsyncSelect::Initialize()
 {
-	std::cout << "Initialize Client TCP" << std::endl;
+	std::cout << "Initialize Client WSAAsyncSelect" << std::endl;
 
 	if (!__super::Initialize()) return false;
 
 	// 1. 家南 积己
-	clientSocket = ::socket(AF_INET, SOCK_STREAM, 0);
-	if (clientSocket == INVALID_SOCKET)
+	socket = ::socket(AF_INET, SOCK_STREAM, 0);
+	if (socket == INVALID_SOCKET)
 	{
 		std::cout << "Socket Error Code : " << ::WSAGetLastError() << std::endl;
 		return false;
@@ -21,7 +21,7 @@ bool Client_TCP::Initialize()
 	::inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
 	serverAddr.sin_port = ::htons(7777);
 
-	if (::connect(clientSocket, reinterpret_cast<const SOCKADDR*>(&serverAddr), sizeof(serverAddr)) == SOCKET_ERROR)
+	if (::connect(socket, reinterpret_cast<const SOCKADDR*>(&serverAddr), sizeof(serverAddr)) == SOCKET_ERROR)
 	{
 		std::cout << "Connect Error Code : " << ::WSAGetLastError() << std::endl;
 		return false;
@@ -32,35 +32,25 @@ bool Client_TCP::Initialize()
 	return true;
 }
 
-void Client_TCP::Deinitialize()
+void Client_WSAAsyncSelect::Deinitialize()
 {
-	::closesocket(clientSocket);
+	::closesocket(socket);
 	__super::Deinitialize();
 }
 
-void Client_TCP::Run()
+void Client_WSAAsyncSelect::Run()
 {
 	std::string sendBuffer{ "Hello Echo" };
 
 	while (true)
 	{
-		if (::send(clientSocket, sendBuffer.c_str(), static_cast<int32>(sendBuffer.size()), 0) == SOCKET_ERROR)
+		if (::send(socket, sendBuffer.c_str(), static_cast<int32>(sendBuffer.size()), 0) == SOCKET_ERROR)
 		{
 			std::cout << "Send Error Code : " << ::WSAGetLastError() << std::endl;
 			return;
 		}
 
 		std::cout << "Send Data! Data = " << sendBuffer << " / " << sendBuffer.size() << std::endl;
-
-		std::string recvBuffer(RECV_SIZE, 0);
-
-		if (::recv(clientSocket, recvBuffer.data(), static_cast<int32>(recvBuffer.size()), 0) <= 0)
-		{
-			std::cout << "Recv Error Code : " << ::WSAGetLastError() << std::endl;
-			return;
-		}
-
-		std::cout << "Recv Data! Data = " << recvBuffer << " / " << recvBuffer.size() << std::endl;
 
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}

@@ -126,15 +126,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CoreMinimal.cpp" />
+    <ClCompile Include="Inheritance.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PerfectForwarding.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="RuleOfFive.cpp" />
+    <ClCompile Include="RuleOfFive.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreMinimal.h" />
+    <ClInclude Include="Inheritance.h" />
     <ClInclude Include="PerfectForwarding.h" />
     <ClInclude Include="RuleOfFive.h" />
   </ItemGroup>

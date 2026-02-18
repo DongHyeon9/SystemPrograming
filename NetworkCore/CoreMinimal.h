@@ -1,6 +1,5 @@
 #pragma once
-#include "Struct.h"
-#include "PreProcess.h"
+#include "Functions.h"
 
 template<class T>
 class Singleton

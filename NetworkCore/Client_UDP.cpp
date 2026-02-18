@@ -32,6 +32,7 @@ bool Client_UDP::Initialize()
 
 void Client_UDP::Deinitialize()
 {
+    ::closesocket(socket);
     __super::Deinitialize();
 }
 
