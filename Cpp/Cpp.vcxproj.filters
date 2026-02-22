@@ -14,6 +14,21 @@
     <ClCompile Include="Inheritance.cpp">
       <Filter>3.Inheritance</Filter>
     </ClCompile>
+    <ClCompile Include="New.cpp">
+      <Filter>4.New</Filter>
+    </ClCompile>
+    <ClCompile Include="UniquePtr.cpp">
+      <Filter>5.UniquePtr</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector.cpp">
+      <Filter>6.Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedPtr.cpp">
+      <Filter>7.SharedPtr</Filter>
+    </ClCompile>
+    <ClCompile Include="Transparent.cpp">
+      <Filter>8.Transparent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="1.PerfectForwarding">
@@ -28,6 +43,21 @@
     <Filter Include="3.Inheritance">
       <UniqueIdentifier>{91e5aef4-12a1-467b-8253-744d303a6c65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="4.New">
+      <UniqueIdentifier>{b80a4f7c-6ca4-4695-b9a6-2a3595d7cae2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="5.UniquePtr">
+      <UniqueIdentifier>{a0822579-5594-441f-81b9-09d702ae6692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="6.Vector">
+      <UniqueIdentifier>{1a226c61-0568-4cb1-bdfc-807a64d12f57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="7.SharedPtr">
+      <UniqueIdentifier>{5b6c23d3-2626-4ffc-b0f4-74c713e9fc4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="8.Transparent">
+      <UniqueIdentifier>{0ef1bbfa-86e8-4300-bd59-8ce65c92edcd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PerfectForwarding.h">
@@ -41,6 +71,21 @@
     </ClInclude>
     <ClInclude Include="Inheritance.h">
       <Filter>3.Inheritance</Filter>
+    </ClInclude>
+    <ClInclude Include="New.h">
+      <Filter>4.New</Filter>
+    </ClInclude>
+    <ClInclude Include="UniquePtr.h">
+      <Filter>5.UniquePtr</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>6.Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedPtr.h">
+      <Filter>7.SharedPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="Transparent.h">
+      <Filter>8.Transparent</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

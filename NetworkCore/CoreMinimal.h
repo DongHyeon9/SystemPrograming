@@ -11,6 +11,9 @@ public:
 		return &inst;
 	}
 
+	Singleton(const Singleton<T>&) = delete;
+	Singleton<T>& operator=(const Singleton<T>&) = delete;
+
 protected:
 	Singleton() = default;
 };
