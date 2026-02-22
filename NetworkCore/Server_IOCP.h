@@ -24,11 +24,6 @@
 class NETWORK_API Server_IOCP : public AppBase<Server_IOCP>
 {
 public:
-	// std::vector<std::thread> workerThread의 복사 생성자 때문에 추가
-	Server_IOCP() = default;
-	Server_IOCP(const Server_IOCP&) = delete;
-	Server_IOCP& operator=(const Server_IOCP&) = delete;
-
 	bool Initialize()override;
 	void Deinitialize()override;
 	void Run()override;
