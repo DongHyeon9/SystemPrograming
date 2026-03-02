@@ -29,6 +29,12 @@
     <ClCompile Include="Transparent.cpp">
       <Filter>8.Transparent</Filter>
     </ClCompile>
+    <ClCompile Include="BenchmarkSample.cpp">
+      <Filter>9.Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="Template.cpp">
+      <Filter>10.Template</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="1.PerfectForwarding">
@@ -58,6 +64,12 @@
     <Filter Include="8.Transparent">
       <UniqueIdentifier>{0ef1bbfa-86e8-4300-bd59-8ce65c92edcd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="9.Benchmark">
+      <UniqueIdentifier>{47a46b70-b187-419c-be9d-38d70b447e2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10.Template">
+      <UniqueIdentifier>{8b75ca85-f0d8-468e-847c-2c41a2588dc0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PerfectForwarding.h">
@@ -86,6 +98,12 @@
     </ClInclude>
     <ClInclude Include="Transparent.h">
       <Filter>8.Transparent</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkSample.h">
+      <Filter>9.Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="Template.h">
+      <Filter>10.Template</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

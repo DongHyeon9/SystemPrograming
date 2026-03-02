@@ -125,6 +125,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BenchmarkSample.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="CoreMinimal.cpp" />
     <ClCompile Include="Inheritance.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -143,6 +146,7 @@
     <ClCompile Include="RuleOfFive.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Template.cpp" />
     <ClCompile Include="Transparent.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -154,12 +158,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BenchmarkSample.h" />
     <ClInclude Include="CoreMinimal.h" />
     <ClInclude Include="Inheritance.h" />
     <ClInclude Include="New.h" />
     <ClInclude Include="PerfectForwarding.h" />
     <ClInclude Include="SharedPtr.h" />
     <ClInclude Include="RuleOfFive.h" />
+    <ClInclude Include="Template.h" />
     <ClInclude Include="Transparent.h" />
     <ClInclude Include="UniquePtr.h" />
     <ClInclude Include="Vector.h" />
