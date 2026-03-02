@@ -22,12 +22,6 @@
     <ClInclude Include="CoreMinimal.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="ClientApp.h">
-      <Filter>App</Filter>
-    </ClInclude>
-    <ClInclude Include="ServerApp.h">
-      <Filter>App</Filter>
-    </ClInclude>
     <ClInclude Include="Server_TCP.h">
       <Filter>SocketModel\1.TCPSocket</Filter>
     </ClInclude>
@@ -92,12 +86,6 @@
   <ItemGroup>
     <ClCompile Include="CoreMinimal.cpp">
       <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientApp.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
-    <ClCompile Include="ServerApp.cpp">
-      <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="Client_TCP.cpp">
       <Filter>SocketModel\1.TCPSocket</Filter>

@@ -12,14 +12,3 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     }
     return TRUE;
 }
-
-namespace NETWORK_INTERFACE
-{
-    CREATE_SOCKET CREATE_SOCKET_FUNC{};
-    CONNECT CONNECT_FUNC{};
-    BIND BIND_FUNC{};
-    LISTEN LISTEN_FUNC{};
-    ACCEPT ACCEPT_FUNC{};
-    SEND SEND_FUNC{};
-    RECV RECV_FUNC{};
-}
