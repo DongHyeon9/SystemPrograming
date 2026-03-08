@@ -20,6 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppBase.h" />
+    <ClInclude Include="Client_Asio.h" />
+    <ClInclude Include="Client_RIO.h" />
+    <ClInclude Include="Server_Asio.h" />
     <ClInclude Include="Client_IOCP.h" />
     <ClInclude Include="Client_NBS.h" />
     <ClInclude Include="Client_Overlapped_Callback.h" />
@@ -34,6 +37,7 @@
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="PreProcess.h" />
+    <ClInclude Include="Server_RIO.h" />
     <ClInclude Include="Server_IOCP.h" />
     <ClInclude Include="Server_NBS.h" />
     <ClInclude Include="Server_Overlapped_Callback.h" />
@@ -49,6 +53,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppBase.cpp" />
+    <ClCompile Include="Client_Asio.cpp" />
+    <ClCompile Include="Client_RIO.cpp" />
+    <ClCompile Include="Server_Asio.cpp" />
     <ClCompile Include="Client_IOCP.cpp" />
     <ClCompile Include="Client_NBS.cpp" />
     <ClCompile Include="Client_Overlapped_Callback.cpp" />
@@ -60,6 +67,7 @@
     <ClCompile Include="Client_WSAEventSelect.cpp" />
     <ClCompile Include="CoreMinimal.cpp" />
     <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="Server_RIO.cpp" />
     <ClCompile Include="Server_IOCP.cpp" />
     <ClCompile Include="Server_NBS.cpp" />
     <ClCompile Include="Server_Overlapped_Callback.cpp" />
