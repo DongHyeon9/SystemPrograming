@@ -29,12 +29,24 @@ bool Server_IOCP::Initialize()
 	if (!__super::Initialize()) return false;
 
     // 1. 소켓 생성
-    socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    // WSASocket : socket에서 인자를 더 세분화할 수 있는 버전
+    //socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    socket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
     if (socket == INVALID_SOCKET)
     {
         std::cout << "Socket Error Code : " << ::WSAGetLastError() << std::endl;
         return false;
     }
+    
+    // ::WSAIoctl
+    // 필요에 따라 소켓 고급 기능을 사용할 수 있다
+    // https://learn.microsoft.com/ko-kr/windows/win32/api/winsock2/nf-winsock2-wsaioctl
+    // ex) SIO_GET_EXTENSION_FUNCTION_POINTER 명령으로 AcceptEx, ConnectEx 등의 함수 포인터를 가져올 수 있다.
+
+	// ::setsockopt
+    // 소켓의 옵션을 설정하는 함수
+    // https://learn.microsoft.com/ko-kr/windows/win32/api/winsock2/nf-winsock2-setsockopt
+    // ex) TCP_NODELAY 옵션을 켤 수도 있다 (Nagle 알고리즘 비활성화)
 
     // 서버정보 입력
     SOCKADDR_IN serverAddr{};

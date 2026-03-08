@@ -7,7 +7,9 @@
 //#include "SharedPtr.h"
 //#include "Transparent.h"
 //#include "BenchmarkSample.h"
-#include "Template.h"
+//#include "Template.h"
+#include "Concurrent.h"
+#include "TypeDeduction.h"
 
 int main()
 {

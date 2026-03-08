@@ -21,6 +21,29 @@
 // - Alertable Wait -> CP 결과 처리를 GetQueuedCompletionStatus
 // 쓰레드랑 궁합이 굉장히 좋다!
 
+// Page Locking
+// I/O 작업이 완료될 때까지 해당 버퍼가 Page Out되지 않도록 고정하는 기술
+// WSARecv, WSASend는 호출 시 사용자가 제공한 버퍼에 데이터를 직접 전달
+// -> 실제 I/O는 커널에서 수행(커널이 유저 메모리 버퍼에 직접 접근)
+// 가상 메모리 시스템 때문에 사용자가 제공한 버퍼가 Page Out될 수 있다(커널이 접근하려는 메모리가 사라질 수 있다)
+// Page Lock은 버퍼크기 단위가 아니라 Page단위로 Lock을 한다(Windows의 Page 크기는 일반적으로 4KB)
+// 
+// 문제점
+// IOCP는 Recv를 미리 걸어두는 구조라서 실제로 데이터가 안 와도 Page Lock이 발생한다
+// 클라이언트가 10,000명 접속 했다고 가정하면 10,000 * 4KB = 40MB의 메모리가 Page Lock된다
+// -> 메모리 낭비 심각
+// 
+// 완화 방법(Memory Pool + Object Pool)
+// 이렇게 하면 Page Lock이 발생하는 버퍼의 개수를 줄일 수 있다
+// 
+// 해결법(Zero Byte Recv)
+// 데이터가 실제로 올 때만 버퍼를 준비
+// 
+// ZeroByteRecv는 대부분 쓰이지 않음
+// 1. Page Lock으로 인한 메모리 부족 문제가 거의 안터짐 (RAM이 충분히 크고, 메모리 풀로 관리하면 충분히 완화 가능)
+// 2. ZeroByteRecv는 구현이 까다롭고, 성능이 떨어질 수 있다 (추가적인 시스템 콜과 복잡한 로직 필요)
+// 3. 더 좋은 기술 등장(예: RIO)
+
 class NETWORK_API Server_IOCP : public AppBase<Server_IOCP>
 {
 public:

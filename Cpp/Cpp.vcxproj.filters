@@ -35,6 +35,12 @@
     <ClCompile Include="Template.cpp">
       <Filter>10.Template</Filter>
     </ClCompile>
+    <ClCompile Include="Concurrent.cpp">
+      <Filter>11.Concurrent</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeDeduction.cpp">
+      <Filter>12.TypeDeduction</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="1.PerfectForwarding">
@@ -70,6 +76,12 @@
     <Filter Include="10.Template">
       <UniqueIdentifier>{8b75ca85-f0d8-468e-847c-2c41a2588dc0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="11.Concurrent">
+      <UniqueIdentifier>{a8a98f50-7ecb-421e-9676-0c57253f9dee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="12.TypeDeduction">
+      <UniqueIdentifier>{f56784f6-0f2e-4e31-a9cc-e3ad946a7d90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PerfectForwarding.h">
@@ -104,6 +116,12 @@
     </ClInclude>
     <ClInclude Include="Template.h">
       <Filter>10.Template</Filter>
+    </ClInclude>
+    <ClInclude Include="Concurrent.h">
+      <Filter>11.Concurrent</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeDeduction.h">
+      <Filter>12.TypeDeduction</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

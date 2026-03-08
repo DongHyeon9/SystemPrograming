@@ -18,6 +18,13 @@
 #include <mutex>
 #include <random>
 #include <ranges>
+#include <future>
+#include <shared_mutex>
+#include <cmath>
+#include <numeric>
+#include <semaphore>
+#include <latch>
+#include <barrier>
 
 template<class T>
 class Singleton

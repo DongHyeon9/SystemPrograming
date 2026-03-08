@@ -82,6 +82,18 @@
     <ClInclude Include="Client_IOCP.h">
       <Filter>SocketModel\9.IOCP</Filter>
     </ClInclude>
+    <ClInclude Include="Server_Asio.h">
+      <Filter>SocketModel\10.Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_RIO.h">
+      <Filter>SocketModel\11.RIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_Asio.h">
+      <Filter>SocketModel\10.Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_RIO.h">
+      <Filter>SocketModel\11.RIO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreMinimal.cpp">
@@ -147,6 +159,18 @@
     <ClCompile Include="Server_IOCP.cpp">
       <Filter>SocketModel\9.IOCP</Filter>
     </ClCompile>
+    <ClCompile Include="Server_Asio.cpp">
+      <Filter>SocketModel\10.Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_RIO.cpp">
+      <Filter>SocketModel\11.RIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_Asio.cpp">
+      <Filter>SocketModel\10.Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_RIO.cpp">
+      <Filter>SocketModel\11.RIO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -184,6 +208,12 @@
     </Filter>
     <Filter Include="SocketModel\9.IOCP">
       <UniqueIdentifier>{353aa458-a851-4c6a-b738-e7c6c234e898}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\10.Asio">
+      <UniqueIdentifier>{807df94b-a7e8-405b-8ab3-ca6cd5d88b2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\11.RIO">
+      <UniqueIdentifier>{5799cda1-8b34-4ea0-8e1b-1c0030e5b19d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
