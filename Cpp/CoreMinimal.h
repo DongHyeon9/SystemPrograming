@@ -25,6 +25,7 @@
 #include <semaphore>
 #include <latch>
 #include <barrier>
+#include <deque>
 
 template<class T>
 class Singleton

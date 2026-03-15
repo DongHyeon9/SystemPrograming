@@ -11,7 +11,8 @@
 // - 프로그램 I/O요청 -> OS 완료 및 통지
 
 // Overlapped 모델 (Completion Routine 콜백 기반)
-// - 비동기 입출력 함수 완료되면, 쓰레드마다 있는 APC(Asynchronous procedure call) 큐에 일감이 쌓임 -> https://learn.microsoft.com/ko-kr/windows/win32/sync/asynchronous-procedure-calls
+// - 비동기 입출력 함수 완료되면, 쓰레드마다 있는 APC(Asynchronous procedure call) 큐에 일감이 쌓임
+// -> https://learn.microsoft.com/ko-kr/windows/win32/sync/asynchronous-procedure-calls
 // - Alertable Wait 상태로 들어가서 APC 큐 비우기 (콜백 함수)
 // 단점) APC큐 쓰레드마다 있다! Alertable Wait 자체도 조금 부담!
 // 단점) 이벤트 방식 소켓:이벤트 1:1 대응

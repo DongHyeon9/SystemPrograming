@@ -135,6 +135,9 @@
     <ClCompile Include="Inheritance.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="LookupTable.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="New.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -149,13 +152,22 @@
     <ClCompile Include="RuleOfFive.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="STL_Algorithm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="STL_Filesystem.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="STL_Iterator.cpp" />
     <ClCompile Include="Template.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Transparent.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="TypeDeduction.cpp" />
+    <ClCompile Include="TypeDeduction.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="UniquePtr.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -168,10 +180,14 @@
     <ClInclude Include="Concurrent.h" />
     <ClInclude Include="CoreMinimal.h" />
     <ClInclude Include="Inheritance.h" />
+    <ClInclude Include="LookupTable.h" />
     <ClInclude Include="New.h" />
     <ClInclude Include="PerfectForwarding.h" />
     <ClInclude Include="SharedPtr.h" />
     <ClInclude Include="RuleOfFive.h" />
+    <ClInclude Include="STL_Algorithm.h" />
+    <ClInclude Include="STL_Filesystem.h" />
+    <ClInclude Include="STL_Iterator.h" />
     <ClInclude Include="Template.h" />
     <ClInclude Include="Transparent.h" />
     <ClInclude Include="TypeDeduction.h" />
