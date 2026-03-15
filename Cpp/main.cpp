@@ -8,8 +8,11 @@
 //#include "Transparent.h"
 //#include "BenchmarkSample.h"
 //#include "Template.h"
-#include "Concurrent.h"
-#include "TypeDeduction.h"
+//#include "Concurrent.h"
+//#include "TypeDeduction.h"
+//#include "LookupTable.h"
+#include "STL_Iterator.h"
+//#include "STL_Algorithm.h"
 
 int main()
 {

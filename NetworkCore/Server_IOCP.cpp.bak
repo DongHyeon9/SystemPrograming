@@ -1,6 +1,6 @@
 #include "Server_IOCP.h"
 
-constexpr uint64 THREAD_COUNT{ 4 };
+constexpr uint64 THREAD_COUNT{ 1 };
 static constexpr DWORD BUFFER_COUNT{ 1 };
 
 namespace IO_TYPE
@@ -10,6 +10,16 @@ namespace IO_TYPE
         READ,
         WRITE,
     };
+}
+
+void CALLBACK SendCallback(DWORD Error, DWORD RecvLen, LPWSAOVERLAPPED Overlapped, DWORD Flags)
+{
+    OverlappedEx* overlapped{ reinterpret_cast<OverlappedEx*>(Overlapped) };
+    std::string* buffer{ reinterpret_cast<std::string*>(overlapped->wsaBuf.buf) };
+    std::cout << "Send Data! Data = " << *buffer << " / " << buffer->size() << std::endl;
+
+    delete buffer;
+    delete overlapped;
 }
 
 bool Server_IOCP::Initialize()
@@ -39,8 +49,6 @@ bool Server_IOCP::Initialize()
     // ex)
     //  - SO_REUSEADDR : 바인딩 전에 IP주소와 포트를 재사용
     //  - TCP_NODELAY : Nagle 알고리즘 비활성화
-	//  - SO_RCVBUF : 수신버퍼(운영체제) 사이즈 설정
-    //  - SO_SNDBUF : 송신버퍼(운영체제) 사이즈 설정
 
     // 서버정보 입력
     SOCKADDR_IN serverAddr{};
@@ -84,7 +92,6 @@ void Server_IOCP::Deinitialize()
     for (auto& thread : workerThread)
         thread.join();
 
-	::closesocket(socket);
     ::CloseHandle(hIOCP);
 
 	__super::Deinitialize();

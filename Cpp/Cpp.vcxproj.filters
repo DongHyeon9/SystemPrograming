@@ -41,6 +41,18 @@
     <ClCompile Include="TypeDeduction.cpp">
       <Filter>12.TypeDeduction</Filter>
     </ClCompile>
+    <ClCompile Include="LookupTable.cpp">
+      <Filter>13.LookupTable</Filter>
+    </ClCompile>
+    <ClCompile Include="STL_Algorithm.cpp">
+      <Filter>14.STL</Filter>
+    </ClCompile>
+    <ClCompile Include="STL_Iterator.cpp">
+      <Filter>14.STL</Filter>
+    </ClCompile>
+    <ClCompile Include="STL_Filesystem.cpp">
+      <Filter>14.STL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="1.PerfectForwarding">
@@ -82,6 +94,12 @@
     <Filter Include="12.TypeDeduction">
       <UniqueIdentifier>{f56784f6-0f2e-4e31-a9cc-e3ad946a7d90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="13.LookupTable">
+      <UniqueIdentifier>{399dd62a-7c46-446b-8fcd-6de429cacee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="14.STL">
+      <UniqueIdentifier>{bcb4594c-268f-4177-a490-63955121395c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PerfectForwarding.h">
@@ -122,6 +140,18 @@
     </ClInclude>
     <ClInclude Include="TypeDeduction.h">
       <Filter>12.TypeDeduction</Filter>
+    </ClInclude>
+    <ClInclude Include="LookupTable.h">
+      <Filter>13.LookupTable</Filter>
+    </ClInclude>
+    <ClInclude Include="STL_Iterator.h">
+      <Filter>14.STL</Filter>
+    </ClInclude>
+    <ClInclude Include="STL_Algorithm.h">
+      <Filter>14.STL</Filter>
+    </ClInclude>
+    <ClInclude Include="STL_Filesystem.h">
+      <Filter>14.STL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
