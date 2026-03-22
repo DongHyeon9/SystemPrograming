@@ -153,12 +153,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="STL_Algorithm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="STL_Container.cpp" />
+    <ClCompile Include="STL_Iterator.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="STL_Filesystem.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="STL_Iterator.cpp" />
     <ClCompile Include="Template.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -186,7 +186,7 @@
     <ClInclude Include="SharedPtr.h" />
     <ClInclude Include="RuleOfFive.h" />
     <ClInclude Include="STL_Algorithm.h" />
-    <ClInclude Include="STL_Filesystem.h" />
+    <ClInclude Include="STL_Container.h" />
     <ClInclude Include="STL_Iterator.h" />
     <ClInclude Include="Template.h" />
     <ClInclude Include="Transparent.h" />
