@@ -50,7 +50,7 @@
     <ClCompile Include="STL_Iterator.cpp">
       <Filter>14.STL</Filter>
     </ClCompile>
-    <ClCompile Include="STL_Filesystem.cpp">
+    <ClCompile Include="STL_Container.cpp">
       <Filter>14.STL</Filter>
     </ClCompile>
   </ItemGroup>
@@ -150,7 +150,7 @@
     <ClInclude Include="STL_Algorithm.h">
       <Filter>14.STL</Filter>
     </ClInclude>
-    <ClInclude Include="STL_Filesystem.h">
+    <ClInclude Include="STL_Container.h">
       <Filter>14.STL</Filter>
     </ClInclude>
   </ItemGroup>

@@ -201,4 +201,18 @@ void ExampleMain()
 		std::println("std::sentinel_for<std::default_sentinel_t, vi_t>: {}", Sentinel_VectorIter);
 		std::println("std::sentinel_for<vi_t, vi_t>: {}", VectorIter_VectorIter);
 	}
+
+	// std::ranges::subranges ( C++ 20 )
+	// iterator와 sentinel을 사용해
+	// 특정컨테이너의 특정구간을 정의하는 반복자를 만듬
+	// [first, last)로 묶여있음
+	// tuple처럼 사용가능
+	{
+		std::println("===== std::ranges::subranges =====");
+		std::vector<int> v{ 1, 2, 3, 4, 5 };
+		auto sub = std::ranges::subrange(v.begin(), v.begin() + 2);
+		std::println("sub : {}", sub);
+		auto [first, last] = sub;
+		std::println("sum : {}", std::accumulate(first, last, 0));
+	}
 }

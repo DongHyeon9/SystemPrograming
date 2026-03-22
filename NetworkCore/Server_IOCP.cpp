@@ -3,6 +3,10 @@
 constexpr uint64 THREAD_COUNT{ 4 };
 static constexpr DWORD BUFFER_COUNT{ 1 };
 
+static LPFN_CONNECTEX ConnectEx{};
+static LPFN_DISCONNECTEX DisconnectEx{};
+static LPFN_ACCEPTEX AcceptEx{};
+
 namespace IO_TYPE
 {
     enum : uint8
@@ -32,6 +36,45 @@ bool Server_IOCP::Initialize()
     // 필요에 따라 소켓 고급 기능을 사용할 수 있다
     // https://learn.microsoft.com/ko-kr/windows/win32/api/winsock2/nf-winsock2-wsaioctl
     // ex) SIO_GET_EXTENSION_FUNCTION_POINTER 명령으로 AcceptEx, ConnectEx 등의 함수 포인터를 가져올 수 있다.
+
+    {
+		// AcceptEx 함수 포인터 가져오기
+        // 사용하는 이유
+        // https://stackoverflow.com/questions/4470645/acceptex-without-wsaioctl
+        GUID guid = WSAID_ACCEPTEX;
+        LPVOID* fn{ reinterpret_cast<LPVOID*>(&AcceptEx) };
+        DWORD bytes{};
+        if (SOCKET_ERROR != ::WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid, sizeof(guid), fn, sizeof(*fn), OUT & bytes, NULL, NULL))
+        {
+            std::cout << "WSAIoctl Error Code : " << ::WSAGetLastError() << std::endl;
+            return false;
+        }
+    }
+
+    {
+        // DisconnectEx 함수 포인터 가져오기
+        GUID guid = WSAID_DISCONNECTEX;
+        LPVOID* fn{ reinterpret_cast<LPVOID*>(&DisconnectEx) };
+        DWORD bytes{};
+        if (SOCKET_ERROR != ::WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid, sizeof(guid), fn, sizeof(*fn), OUT & bytes, NULL, NULL))
+        {
+            std::cout << "WSAIoctl Error Code : " << ::WSAGetLastError() << std::endl;
+            return false;
+        }
+    }
+
+    {
+        // DisconnectEx 함수 포인터 가져오기
+        GUID guid = WSAID_CONNECTEX;
+        LPVOID* fn{ reinterpret_cast<LPVOID*>(&ConnectEx) };
+        DWORD bytes{};
+        if (SOCKET_ERROR != ::WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid, sizeof(guid), fn, sizeof(*fn), OUT & bytes, NULL, NULL))
+        {
+            std::cout << "WSAIoctl Error Code : " << ::WSAGetLastError() << std::endl;
+            return false;
+        }
+    }
+
 
 	// ::setsockopt
     // 소켓의 옵션을 설정하는 함수
