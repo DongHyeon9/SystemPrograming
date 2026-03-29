@@ -32,3 +32,5 @@
 #include <WS2tcpip.h>
 #include <Windows.h>
 #include <tchar.h>
+
+#include <boost/asio.hpp>

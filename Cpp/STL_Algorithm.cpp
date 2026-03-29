@@ -37,15 +37,94 @@ decltype(auto) InvokeFunc(F&& Func, ARGS&& ... Args)
 	return std::invoke(std::forward<F>(Func), std::forward<ARGS>(Args)...);
 }
 
+void Func1(int a, int b, int c, int d)
+{
+	std::println("Func1 : {}, {}, {}, {}", a, b, c, d);
+}
+
+int Func2(int A, int B)
+{
+	std::println("Func2 : {}", A);
+	return B;
+}
+
+class Foo
+{
+public:
+	void Func1(int X, int Y)
+	{
+		std::println("{} : {}, {}", static_cast<void*>(this), X, Y);
+	}
+};
+
+int Add(int A, int B) { return A + B; }
+int Mul(int A, int B) { return A * B; }
+
+struct Add_Functor { int operator()(int a, int b)const { return a + b; } };
+
+// std::is_bind_expression_v<T>를 만족시키기 위한 특수화
+template<>
+struct std::is_bind_expression<Add_Functor> : public std::true_type {};
+
 void ExampleMain()
 {
 	// Bind
-	// 함수 객체를 생성하는 함수
-	// 함수와 인자를 바인딩하여 새로운 함수 객체를 생성
+	// Callable Object의 일부(전체) 인자를 고정한 새로운 함수객체를 생성
+	// Bind의 인자 값
+	//  - 고정될 인자 값(literals) -> Ordinary Argument
+	//  - std::placeholers
+	//  - std::reference_wrapper
+	//  - bind expression
+	// 
+	// 내부적으로 복사본을 보관하기 때문에
+	// 참조를 전달할 거라면 reference_wrapper를 이용해야되고
+	// 객체를 전달할 때도 주소값을 보내줘야됨
+	// 
+	// 맴버변수도 bind 가능
+	//
 	{
 		std::println("===== Bind, Invoke =====");
 		auto AddFunc = std::bind([](int A, int B) {return A + B; }, std::placeholders::_1, std::placeholders::_2);
 		std::println("{}", InvokeFunc(AddFunc, 1, 2));
+
+		// Func1 함수의 인자 4개를 각각 1,2,3,4로 고정한 새로운 함수객체를 만듬
+		std::bind(&Func1, 1, 2, 3, 4)();
+
+		// Func1 함수의 1, 3번 인자를 각각 9,7로 고정하고
+		// 나머지(2, 4)번째 인자는 각각 f2를 호출할 때 _1번째와 _2번째로 받는 인자로 넘겨준다
+		std::bind(&Func1, 9, std::placeholders::_1, 7, std::placeholders::_2)(8, 6);
+
+		// std::reference_wrapper
+		int n1{ 0 };
+		int n2{};
+		auto f3 = std::bind([](int n) {std::println("Lambda : {}", n); }, n1);
+		auto f4 = std::bind([](int n) {std::println("Lambda : {}", n); }, std::ref(n1));
+		n1 = 100;
+		f3();
+		f4();
+
+		Foo foo{};
+		foo.Func1(n1, n2);
+		std::bind(&Foo::Func1, foo, n1, n2)();
+		std::bind(&Foo::Func1, &foo, n1, n2)();
+		std::bind(&Foo::Func1, std::ref(foo), n1, n2)();
+
+		// nested bind expression
+		auto f8 = std::bind(&Mul, std::bind(&Add, std::placeholders::_1, std::placeholders::_2), 2);
+		std::println("bind expression : {}", f8(3, 4));	// Mul(Add(3, 4), 2)
+
+		// bind expression을 사용할 때 Add를 넘기고 싶다면
+		// 함수객체로 만들고, std::is_bind_expression_v<T>를 만족하면 된다
+		auto f9 = std::bind(&Mul, Add_Functor{}, 2);
+		std::println("std::is_bind_expression_v : {}", f9(3, 4));
+
+		// std::bind -> C++ 11
+		// std::bind_first -> C++ 20 -> 인자를 앞쪽부터 차례대로 고정할 때 사용
+		// std::bind_back -> C++ 23 -> 인자를 뒤쪽부터 차례대로 고정할 때 사용
+		// 인자의 재정렬 불가
+		// nested bind expression 지원 안됨
+		std::bind_front(&Func1, 0, 0)(1, 2);
+		std::bind_back(&Func1, 0, 0)(1, 2);
 	}
 
 	// Transform
@@ -305,5 +384,67 @@ void ExampleMain()
 			std::println("ret2 : {}", *ret2);
 			std::println("ret3 : {}", *ret3);
 		}
+	}
+
+	// Structure Binding ( C++ 17 )
+	{
+		std::println("===== Structure Binding =====");
+		std::map<int, std::string> map
+		{
+			{1,"A"},
+			{2,"B"},
+			{3,"C"},
+			{4,"D"},
+			{5,"E"},
+		};
+
+		for (const auto& [key, value] : map)
+		{
+			std::println("{}, {}", key, value);
+		}
+	}
+
+	// Ranges Library ( C++ 20 )
+	// take_view : range_for를 이용해서 요소의 일부만 접근 할 수 있는 View를 제공
+	// reverse_view : range_for를 이용해서 모든 요소를 거꾸로 접근할 수 있음
+	// view는 중첩해서 사용할 수 있음
+	// range_for는 내부적으로 begin(), end(), bool변환 연산자가 존재해야됨
+	// view는 이를 제공함
+	// 
+	// Range
+	// C++ 20에서 추가된 용어
+	// std::ranges::begin(), end()로 반복자를 얻을 수 있는 것
+	// container 또는 view
+	// std::ranges::range<T>라는 concept을 통해 확인 가능
+	// 
+	// Borrowed Range
+	// 자원을 소유하지 않은 Range
+	// 다른 Range의 자원을 빌려서 사용
+	// ex) take_view, reverse_view
+	// std::ranges::borrowed_range<T>라는 concept을 통해 확인 가능
+	//
+	{
+		std::println("===== Ranges Library =====");
+		std::vector v{ 1, 2, 3, 4, 5 };
+
+		// 벡터의 요소를 3개만 보는 view
+		std::ranges::take_view tv{ v, 3 };
+		//auto tv = std::views::take(v, 3);		view 함수 사용
+		//auto tv = v | std::views::take(3);	pipe line 사용
+		std::println("take_view : {}", tv);
+
+		// take_view의 요소를 거꾸로 보는 view
+		std::ranges::reverse_view rv{ tv };
+		std::println("reverse_view : {}", rv);
+
+		// reverse_view의 요소 중 홀수만 보는 view
+		std::ranges::filter_view fv{ rv ,[](int n) {return n & 1; } };
+		std::println("filter_view : {}", fv);
+
+		auto pl = v | std::views::take(3) | std::views::reverse | std::views::filter([](int n) {return n & 1; });
+		std::println("pipe line : {}", pl);
+
+		for (auto e : v | std::views::take(3))
+			std::print("{}, ", e);
 	}
 }

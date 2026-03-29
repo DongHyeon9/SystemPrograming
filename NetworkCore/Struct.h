@@ -31,3 +31,40 @@ struct OverlappedEx
 	WSABUF wsaBuf{};
 	uint8 type{};
 };
+
+struct NETWORK_API Session_Asio : public std::enable_shared_from_this<Session_Asio>
+{
+	Session_Asio(boost::asio::ip::tcp::socket Socket) :socket(std::move(Socket)) {}
+	void Start() { DoRecv(); }
+	void DoRecv()
+	{
+		socket.async_receive(boost::asio::buffer(buffer.data(), BUFFER_SIZE),
+			[this](boost::system::error_code ErrCode, std::size_t RecvSize) {
+				if (ErrCode)
+				{
+					std::cout << "Recv Error [" << ErrCode.value() << "] : " << ErrCode.message() << std::endl;
+					return;
+				}
+				std::cout << "Recv [" << this << "] : " << buffer.data() << std::endl;
+				DoSend(RecvSize);
+			});
+	}
+
+	void DoSend(std::size_t Length)
+	{
+		socket.async_send(boost::asio::buffer(buffer.data(), Length),
+			[this](boost::system::error_code ErrCode, std::size_t SendSize) {
+				if (ErrCode)
+				{
+					std::cout << "Send Error [" << ErrCode.value() << "] : " << ErrCode.message() << std::endl;
+					return;
+				}
+				std::string sendData{ buffer.data(), SendSize };
+				std::cout << "Send [" << this << "] : " << sendData << std::endl;
+				DoRecv();
+			});
+	}
+
+	boost::asio::ip::tcp::socket socket;
+	std::array<char, BUFFER_SIZE> buffer{};
+};

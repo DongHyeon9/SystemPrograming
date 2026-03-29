@@ -7,6 +7,9 @@
 #include "Server_Overlapped_Callback.h"
 #include "Server_WSAAsyncSelect.h"
 #include "Server_IOCP.h"
+#include "Server_Asio_SyncTCP.h"
+#include "Server_Asio_SyncUDP.h"
+#include "Server_Asio_AsyncTCP.h"
 
 int main()
 {
@@ -42,7 +45,19 @@ int main()
 	//Server_WSAAsyncSelect::GetInstance()->Run();
 	//Server_WSAAsyncSelect::GetInstance()->Deinitialize();
 
-	Server_IOCP::GetInstance()->Initialize();
-	Server_IOCP::GetInstance()->Run();
-	Server_IOCP::GetInstance()->Deinitialize();
+	//Server_IOCP::GetInstance()->Initialize();
+	//Server_IOCP::GetInstance()->Run();
+	//Server_IOCP::GetInstance()->Deinitialize();
+
+	//Server_Asio_SyncTCP::GetInstance()->Initialize();
+	//Server_Asio_SyncTCP::GetInstance()->Run();
+	//Server_Asio_SyncTCP::GetInstance()->Deinitialize();
+
+	//Server_Asio_SyncUDP::GetInstance()->Initialize();
+	//Server_Asio_SyncUDP::GetInstance()->Run();
+	//Server_Asio_SyncUDP::GetInstance()->Deinitialize();
+
+	Server_Asio_AsyncTCP::GetInstance()->Initialize();
+	Server_Asio_AsyncTCP::GetInstance()->Run();
+	Server_Asio_AsyncTCP::GetInstance()->Deinitialize();
 }

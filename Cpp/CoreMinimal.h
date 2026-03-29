@@ -26,6 +26,7 @@
 #include <latch>
 #include <barrier>
 #include <deque>
+#include <map>
 
 template<class T>
 class Singleton
