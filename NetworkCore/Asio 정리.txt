@@ -1,0 +1,27 @@
+boost/asio 라이브러리
+https://github.com/boostorg/asio
+
+vcpkg로 설치
+git for windows를 통해 편리하게 설치가능
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+bootstrap - vcpkg.bat
+
+Visual Studio와 vcpkg 간의 통합 활성화
+vcpkg integrate install
+
+Visual Studio와 vcpkg 간의 통합 비활성화
+vcpkg integrate remove
+
+boost/asio의 장점
+ - 이식성 : 폭 넓게 사용되고 있는 OS를 지원, 일관된 동작을 제공
+ - 확장성 : 1000대 규모의 병렬 처리의 네트워크 애플리케이션 개발에도 사용할 수 있는 라이브러리, 
+ - 효율성 : Scatter-gather I/O등의 기법을 사용할 수 있음, 데이터 복사를 최소화
+
+sync_read/async_write, read/write는 3가지 버전이 제공된다
+ - 일반 : 표준적인 read/write
+ - xxx_at : read/write를 할 바이트 수를 지정, 대량의 데이터를 조금씩 나누어서 처리하고 싶을 때에 사용
+ - xxx_until : 지정한 문자열이 출현할 때까지 read/write를 실행, 정규 표현 가능 ex) 개행문자마다 read/write
+
+참고자료
+https://github.com/jacking75/boost_asio_sample?tab=readme-ov-file

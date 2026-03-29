@@ -3,3 +3,5 @@
 
 constexpr size_t RECV_SIZE{ 1500 - 20 - 20 };
 constexpr size_t IP_ADDR_SIZE{ 16 };
+constexpr size_t BUFFER_SIZE{ 1500 - 20 - 20 };
+const boost::asio::ip::port_type PORT_NUMBER{ 7777 };

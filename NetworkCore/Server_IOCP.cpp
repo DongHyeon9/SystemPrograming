@@ -5,7 +5,7 @@ static constexpr DWORD BUFFER_COUNT{ 1 };
 
 static LPFN_CONNECTEX ConnectEx{};
 static LPFN_DISCONNECTEX DisconnectEx{};
-static LPFN_ACCEPTEX AcceptEx{};
+static LPFN_ACCEPTEX Accept_ex{};
 
 namespace IO_TYPE
 {
@@ -42,7 +42,7 @@ bool Server_IOCP::Initialize()
         // 사용하는 이유
         // https://stackoverflow.com/questions/4470645/acceptex-without-wsaioctl
         GUID guid = WSAID_ACCEPTEX;
-        LPVOID* fn{ reinterpret_cast<LPVOID*>(&AcceptEx) };
+        LPVOID* fn{ reinterpret_cast<LPVOID*>(&Accept_ex) };
         DWORD bytes{};
         if (SOCKET_ERROR != ::WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid, sizeof(guid), fn, sizeof(*fn), OUT & bytes, NULL, NULL))
         {

@@ -82,17 +82,35 @@
     <ClInclude Include="Client_IOCP.h">
       <Filter>SocketModel\9.IOCP</Filter>
     </ClInclude>
-    <ClInclude Include="Server_Asio.h">
-      <Filter>SocketModel\10.Asio</Filter>
-    </ClInclude>
     <ClInclude Include="Server_RIO.h">
       <Filter>SocketModel\11.RIO</Filter>
     </ClInclude>
-    <ClInclude Include="Client_Asio.h">
-      <Filter>SocketModel\10.Asio</Filter>
-    </ClInclude>
     <ClInclude Include="Client_RIO.h">
       <Filter>SocketModel\11.RIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_Asio_SyncTCP.h">
+      <Filter>SocketModel\10.Asio\1.SyncTCP</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_Asio_SyncUDP.h">
+      <Filter>SocketModel\10.Asio\2.SyncUDP</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_Asio_AsyncTCP.h">
+      <Filter>SocketModel\10.Asio\3.AsyncTCP</Filter>
+    </ClInclude>
+    <ClInclude Include="Client_Asio_AsyncUDP.h">
+      <Filter>SocketModel\10.Asio\4.AsyncUDP</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_Asio_AsyncTCP.h">
+      <Filter>SocketModel\10.Asio\3.AsyncTCP</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_Asio_AsyncUDP.h">
+      <Filter>SocketModel\10.Asio\4.AsyncUDP</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_Asio_SyncTCP.h">
+      <Filter>SocketModel\10.Asio\1.SyncTCP</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_Asio_SyncUDP.h">
+      <Filter>SocketModel\10.Asio\2.SyncUDP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -159,17 +177,35 @@
     <ClCompile Include="Server_IOCP.cpp">
       <Filter>SocketModel\9.IOCP</Filter>
     </ClCompile>
-    <ClCompile Include="Server_Asio.cpp">
-      <Filter>SocketModel\10.Asio</Filter>
-    </ClCompile>
     <ClCompile Include="Server_RIO.cpp">
       <Filter>SocketModel\11.RIO</Filter>
     </ClCompile>
-    <ClCompile Include="Client_Asio.cpp">
-      <Filter>SocketModel\10.Asio</Filter>
-    </ClCompile>
     <ClCompile Include="Client_RIO.cpp">
       <Filter>SocketModel\11.RIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_Asio_SyncTCP.cpp">
+      <Filter>SocketModel\10.Asio\1.SyncTCP</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_Asio_SyncUDP.cpp">
+      <Filter>SocketModel\10.Asio\2.SyncUDP</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_Asio_AsyncTCP.cpp">
+      <Filter>SocketModel\10.Asio\3.AsyncTCP</Filter>
+    </ClCompile>
+    <ClCompile Include="Client_Asio_AsyncUDP.cpp">
+      <Filter>SocketModel\10.Asio\4.AsyncUDP</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_Asio_AsyncTCP.cpp">
+      <Filter>SocketModel\10.Asio\3.AsyncTCP</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_Asio_AsyncUDP.cpp">
+      <Filter>SocketModel\10.Asio\4.AsyncUDP</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_Asio_SyncTCP.cpp">
+      <Filter>SocketModel\10.Asio\1.SyncTCP</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_Asio_SyncUDP.cpp">
+      <Filter>SocketModel\10.Asio\2.SyncUDP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,5 +251,22 @@
     <Filter Include="SocketModel\11.RIO">
       <UniqueIdentifier>{5799cda1-8b34-4ea0-8e1b-1c0030e5b19d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SocketModel\10.Asio\1.SyncTCP">
+      <UniqueIdentifier>{a30b2617-b0d4-4348-8a97-7f2042eda6f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\10.Asio\2.SyncUDP">
+      <UniqueIdentifier>{a3205e45-f57d-41de-98a3-591ec3a13cad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\10.Asio\3.AsyncTCP">
+      <UniqueIdentifier>{b5c1e445-1d7a-4d8a-9238-62bf88f72d41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketModel\10.Asio\4.AsyncUDP">
+      <UniqueIdentifier>{7a640fa4-074b-47ea-9d45-504c249b6896}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Asio 정리.txt">
+      <Filter>SocketModel\10.Asio</Filter>
+    </Text>
   </ItemGroup>
 </Project>
