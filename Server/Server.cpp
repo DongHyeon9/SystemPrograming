@@ -10,6 +10,7 @@
 #include "Server_Asio_SyncTCP.h"
 #include "Server_Asio_SyncUDP.h"
 #include "Server_Asio_AsyncTCP.h"
+#include "Server_Asio_AsyncUDP.h"
 
 int main()
 {
@@ -57,7 +58,11 @@ int main()
 	//Server_Asio_SyncUDP::GetInstance()->Run();
 	//Server_Asio_SyncUDP::GetInstance()->Deinitialize();
 
-	Server_Asio_AsyncTCP::GetInstance()->Initialize();
-	Server_Asio_AsyncTCP::GetInstance()->Run();
-	Server_Asio_AsyncTCP::GetInstance()->Deinitialize();
+	//Server_Asio_AsyncTCP::GetInstance()->Initialize();
+	//Server_Asio_AsyncTCP::GetInstance()->Run();
+	//Server_Asio_AsyncTCP::GetInstance()->Deinitialize();
+
+	Server_Asio_AsyncUDP::GetInstance()->Initialize();
+	Server_Asio_AsyncUDP::GetInstance()->Run();
+	Server_Asio_AsyncUDP::GetInstance()->Deinitialize();
 }
