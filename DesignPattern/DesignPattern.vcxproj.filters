@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="DesignPattern.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TemplateMethod.h" />
+    <ClInclude Include="Headers.h" />
+    <ClInclude Include="Strategy.h" />
+  </ItemGroup>
+</Project>

@@ -17,5 +17,5 @@ private:
 	boost::asio::ip::tcp::endpoint endpoint{};
 	std::thread ioThread{};
 
-	std::list<std::shared_ptr<Session_Asio>> sessionList{};
+	std::list<std::shared_ptr<Session_Asio<E_PROTOCOL_TYPE::TCP>>> sessionList{};
 };

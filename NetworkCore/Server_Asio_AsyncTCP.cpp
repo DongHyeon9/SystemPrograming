@@ -1,4 +1,5 @@
 #include "Server_Asio_AsyncTCP.h"
+#include "Server_Asio_AsyncUDP.h"
 
 bool Server_Asio_AsyncTCP::Initialize()
 {
@@ -56,7 +57,7 @@ void Server_Asio_AsyncTCP::Run()
 {
 	while (true)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 }
 
@@ -71,7 +72,7 @@ void Server_Asio_AsyncTCP::DoAccept()
 
 		std::cout << "Accept Client!" << std::endl;
 
-		auto session = std::make_shared<Session_Asio>(std::move(Socket));
+		auto session = std::make_shared<Session_Asio<E_PROTOCOL_TYPE::TCP>>(std::move(Socket));
 		sessionList.emplace_back(session);
 		session->Start();
 
