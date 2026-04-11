@@ -1,11 +1,3 @@
-Windows Internals 7th Edition Part 1 - 줄임말 정리
-
-부록 : https://aka.ms/winint7ed/downloads
-
-소스코드 : https://github.com/zodiacon/windowsinternals
-
----
-
 # 1장 줄임말 (등장 순서)
 
 ## OS - Operating System
