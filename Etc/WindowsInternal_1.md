@@ -2,9 +2,6 @@ Windows Intenal 부록 : https://aka.ms/winint7ed/downloads
 
 소스코드 : https://github.com/zodiacon/windowsinternals
 
-# 0. 용어 정리
-
-
 # 1. 개념과 툴
 ## 1-1 운영체제 버전
 커맨드라인 ver명령어 혹은 winver를 실행해 윈도우 버전 정보를 볼 수 있다 -> 빌드번호를 통해 어떤 패치가 이뤄졌는지 확인 가능(보안 업데이트 관리에 도움)
