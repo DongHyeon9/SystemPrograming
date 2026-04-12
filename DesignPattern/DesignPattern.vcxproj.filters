@@ -7,5 +7,8 @@
     <ClInclude Include="TemplateMethod.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="Strategy.h" />
+    <ClInclude Include="Composite.h" />
+    <ClInclude Include="Decorator.h" />
+    <ClInclude Include="Adapter.h" />
   </ItemGroup>
 </Project>
