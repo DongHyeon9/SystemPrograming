@@ -1,4 +1,4 @@
-# 1장 줄임말 (등장 순서)
+# 1장 줄임말
 
 ## OS - Operating System
 
@@ -193,7 +193,7 @@ GUI 기반 커널·사용자 모드 겸용 디버거
 
 ---
 
-# 2장 줄임말 (등장 순서)
+# 2장 줄임말
 
 ## NT - New Technology
 
@@ -456,7 +456,7 @@ Winlogon.exe 설명에서 처음 정의
 
 ---
 
-# 3장 줄임말 (등장 순서)
+# 3장 줄임말
 
 ## RPC - Remote Procedure Call
 
@@ -762,7 +762,7 @@ Windows 컨테이너(서버 사일로) 구성 요소 설명에서 처음 정의
 
 ---
 
-# 4장 줄임말 (등장 순서, 3장 미등장 항목만)
+# 4장 줄임말
 
 ## ETHREAD - Executive Thread Structure
 
@@ -794,7 +794,7 @@ TEB 구조 설명에서 처음 정의
 
 ---
 
-# 5장 줄임말 (등장 순서, 3·4장 미등장 항목만)
+# 5장 줄임말
 
 ## TLB - Translation Lookaside Buffer
 
@@ -873,3 +873,216 @@ SLAT의 Intel 구현 이름
 
 프로세스 간 데이터를 공유하기 위한 다양한 메커니즘의 총칭
 - 공유 메모리 섹션, 파이프, ALPC, RPC 등이 모두 IPC의 구현 형태
+
+---
+ 
+# 6장 줄임말
+ 
+## FAT - File Allocation Table
+ 
+파일 시스템 목록 나열에서 처음 등장
+- Windows가 지원하는 설치형 파일 시스템 중 하나
+- FAT12, FAT16, FAT32, exFAT 변형 포함
+- USB 드라이브, 플래시 카드 등에 주로 사용
+- NTFS 대비 보안·복구·대용량 기능 없음
+ 
+## CDFS - CD-ROM File System
+ 
+FAT 직후 파일 시스템 목록에서 처음 정의
+- CD-ROM 미디어 전용 파일 시스템
+- ISO 9660 표준 기반
+- 읽기 전용 파일 시스템
+ 
+## UDF - Universal Disk Format
+ 
+CDFS 직후 등장
+- CD, DVD, Blu-ray 등 광학 미디어를 위한 표준 파일 시스템
+- CDFS보다 더 많은 기능 지원 (긴 파일명, 유니코드 등)
+- DVD-RAM 같은 쓰기 가능 광학 미디어 지원
+ 
+## ReFS - Resilient File System
+ 
+UDF 직후 등장. "the Resilient File System (ReFS)"로 처음 정의
+- Windows Server 2012에서 도입된 최신 파일 시스템
+- 데이터 무결성 자동 검증 (저장 시 체크섬 계산)
+- 대용량 볼륨·파일 지원, 가상화 환경 최적화
+- 전체 NTFS 기능(예: 압축)은 지원하지 않음
+ 
+## INF - Device Installation File
+ 
+드라이버 설치 파일을 설명하는 섹션에서 처음 정의
+- 확장자 .inf. 하드웨어와 드라이버의 연결 정보를 담은 스크립트 형식 파일
+- 장치 ID, 드라이버 파일 위치, 레지스트리 수정 사항, 의존성 정보 포함
+- .cat 파일에 디지털 서명 저장 → 드라이버 변조 방지
+ 
+## IRP - I/O Request Packet
+ 
+I/O 관리자 섹션에서 처음 정의
+- I/O 요청을 표현하는 핵심 데이터 구조
+- I/O 시스템이 패킷 기반으로 동작하는 핵심 단위
+- 주 함수 코드 (IRP_MJ_READ 등), 상태, MDL 포인터, I/O 스택 위치 배열을 포함
+- Fast I/O만 IRP를 사용하지 않는 예외
+- 프로세서별 룩어사이드 리스트에서 할당 (소형 1개, 중형 4개, 대형 14개 스택 위치)
+ 
+## DIRQL - Device Interrupt Request Level
+ 
+IRQL 레벨 목록에서 처음 정의
+- 하드웨어 인터럽트에 할당되는 IRQL 수준
+- x86에서 3~26, x64·ARM에서 3~12
+- 항상 DISPATCH_LEVEL(2)보다 높으므로 IRQL 2의 제약이 모두 적용됨 (페이지 폴트 불가, 스케줄러 작동 불가)
+- ISR이 실행되는 IRQL 수준
+ 
+## ISR - Interrupt Service Routine
+ 
+DIRQL 설명 직후 처음 정의
+- 하드웨어 인터럽트 발생 시 커널 트랩 디스패처가 제어를 넘기는 드라이버 루틴
+- DIRQL에서 실행 → 최소한의 작업만 수행 (장치 상태 읽기, 인터럽트 신호 해제)
+- 나머지 처리는 DPC로 위임
+- 인터럽트 기반 장치에만 존재 (파일 시스템 드라이버에는 없음)
+- 특정 스레드 컨텍스트에 의존하는 코드 작성 불가 (임의 스레드에서 실행됨)
+ 
+## USB - Universal Serial Bus
+ 
+유저 모드 드라이버 설명에서 처음 등장
+- "a kernel-mode port driver such as the universal serial bus (USB) printer port driver"로 등장
+- 범용 직렬 버스. 표준화된 플러그 앤 플레이 주변기기 연결 인터페이스
+- UMDF의 적합한 대상 프로토콜 중 하나
+ 
+## PCMCIA - Personal Computer Memory Card International Association
+ 
+WDM 버스 드라이버 예시 목록에서 처음 등장
+- 노트북 확장 카드 표준 인터페이스 단체 및 표준 명칭
+- 현재는 PC Card 또는 ExpressCard로 발전
+- PCI, USB, IEEE 1394와 함께 버스 드라이버 예시로 언급
+ 
+## PCI - Peripheral Component Interconnect
+ 
+PCMCIA 직후 버스 드라이버 예시 목록에서 등장
+- 마더보드와 확장 카드 간의 고속 로컬 버스 표준
+- PCIe(PCI Express)로 발전
+- 대부분의 데스크톱·서버의 주 확장 버스
+ 
+## IEEE - Institute of Electrical and Electronics Engineers
+ 
+PCI 직후 "IEEE 1394"로 처음 등장
+- 전기전자공학자협회
+- IEEE 1394 = FireWire. 고속 직렬 버스 표준. 비디오 카메라, 외장 스토리지 등에 사용
+- UMDF의 지원 프로토콜 중 하나
+ 
+## PDO - Physical Device Object
+ 
+WDM 디바이스 노드 설명에서 처음 정의
+- 버스 드라이버가 PnP 관리자의 지시로 생성하는 장치 오브젝트
+- 장치의 물리적 인터페이스 표현
+- 디바이스 스택에서 항상 맨 아래 위치 (필수)
+- 버스 드라이버가 생성
+ 
+## FDO - Functional Device Object
+ 
+PDO 설명 직후 처음 정의
+- 기능 드라이버(Function Driver)가 생성하는 장치 오브젝트
+- 장치의 논리적 인터페이스 표현. 장치 기능을 가장 잘 아는 드라이버가 생성
+- 디바이스 스택에서 하나만 존재 (필수)
+- 애플리케이션이 실제로 통신하는 인터페이스 제공
+ 
+## SATA - Serial Advanced Technology Attachment
+ 
+포트 드라이버 예시에서 처음 등장
+- "processing of an I/O request specific to a type of I/O port, such as SATA"로 등장
+- 하드 디스크, SSD를 연결하는 직렬 인터페이스 표준
+- 포트 드라이버(Ataport.sys)가 관리
+- PATA(병렬 ATA)를 대체
+ 
+## NDIS - Network Driver Interface Specification
+ 
+포트 드라이버 설명에서 처음 정의
+- "Network Driver Interface Specification (NDIS) is the network 'port' driver"로 등장
+- 네트워크 어댑터 드라이버와 프로토콜 스택 사이의 표준 인터페이스
+- 미니포트 드라이버(네트워크 어댑터 제조사 작성)와 NDIS 사이의 추상화 계층
+- TCP/IP 등 프로토콜 드라이버가 NDIS를 통해 하드웨어에 접근
+ 
+## MDL - Memory Descriptor List
+ 
+I/O 요청 패킷 섹션에서 처음 정의
+- "a memory descriptor list (MDL)...represents information for a buffer in physical memory"로 정의
+- 물리 메모리의 버퍼를 서술하는 데이터 구조
+- 드라이버가 DMA 전송, 직접 I/O 버퍼 접근 시 사용
+- 가상 주소 대신 물리 페이지 프레임 번호 목록으로 버퍼 표현
+ 
+## DDI - Device Driver Interface
+ 
+I/O 완료 루틴 설명에서 처음 등장
+- "a driver can register with the IoSetCompletionRoutine(Ex) DDI"로 등장
+- 드라이버가 커널 I/O 관리자와 상호작용하기 위한 함수 인터페이스 집합
+- WDK 문서에 정의됨
+- Universal DDI : 여러 Windows 플랫폼(IoT, Mobile, 데스크톱)에서 공통으로 사용 가능한 DDI 집합
+ 
+## HID - Human Interface Device
+ 
+디바이스 노드 덤프 실험에서 처음 등장
+- "DeviceInst is 'HID\\MSHW0029'"로 등장
+- 마우스, 키보드, 게임 컨트롤러 등 사람이 직접 조작하는 입력 장치 클래스
+- USB HID 클래스로 표준화 → 제조사별 드라이버 없이도 기본 동작
+- UMDF의 지원 프로토콜 중 하나
+ 
+## ACPI - Advanced Configuration and Power Interface
+ 
+I/O 스택 덤프 실험에서 처음 등장 (\\Driver\\ACPI)
+- 전원 관리 섹션에서 "Windows power-management capabilities require hardware that complies with the Advanced Configuration and Power Interface (ACPI) specification"으로 정의
+- 하드웨어 리소스 구성, 전원 관리, 열 관리, 플러그 앤 플레이를 위한 개방형 표준
+- UEFI의 일부. 시스템 전원 상태(S0~S5)와 장치 전원 상태(D0~D3) 정의
+- BIOS의 고정된 전원·구성 관리를 OS가 동적으로 제어할 수 있도록 대체
+ 
+## MUP - Multiple UNC Provider
+ 
+I/O 취소 섹션에서 처음 등장
+- "drivers that manage network file systems (for example, MUP, DFS, and SMB)"로 등장
+- UNC 기반 경로(\\서버명\공유명)를 원격 리소스로 연결하는 드라이버
+- Start 값 auto-start(2)를 사용하는 비PnP 파일 시스템 드라이버의 대표 예시
+ 
+## SCSI - Small Computer System Interface
+ 
+포트 드라이버 목록에서 처음 등장
+- "responsible for all I/Os on a specific port, such as ATA, SCSI, or USB"로 등장
+- 스토리지 장치(HDD, 테이프, 광학 드라이브, 스캐너 등)를 연결하는 병렬 인터페이스 표준
+- 현재는 SAS(Serial Attached SCSI)로 발전
+- 미니포트 드라이버 개념의 전통적 구현체
+ 
+## ISA - Industry Standard Architecture
+ 
+레거시 장치 설명에서 처음 등장
+- "a device that isn't Plug and Play–compatible...such as a legacy ISA sound card"로 등장
+- 구형 PC 확장 버스 표준. PnP를 지원하지 않는 대표적 레거시 인터페이스
+- ISA 사운드 카드 등은 자동 감지 불가 → 일부 PnP 기능 사용 불가
+ 
+## UNC - Universal Naming Convention
+ 
+드라이버 로드 순서 설명에서 처음 정의
+- "the Multiple Universal Naming Convention (UNC) Provider (MUP) driver"로 정의
+- 네트워크 공유 자원을 \\서버명\공유명 형식으로 표현하는 경로 규칙
+- MUP 드라이버가 UNC 경로를 실제 네트워크 프로바이더(SMB 등)로 라우팅
+ 
+## PoFx - Power Management Framework
+ 
+전원 관리자 섹션 후반부에서 처음 정의
+- "The power management framework (PoFx) provides an API..."로 정의
+- Windows 8에서 도입. 장치 내부의 개별 컴포넌트 단위 전원 상태 관리
+- F 상태(F0=완전 동작~Fn=저전력) 관리 — D0 상태에서만 의미 있음
+- Windows 10에서 성능 상태 관리(주파수·대역폭·커스텀) 기능 추가
+- `PoFxRegisterDevice` → `PoFxActivateComponent` / `PoFxIdleComponent`로 제어
+ 
+## PEP - Platform Extension Plug-in
+ 
+PoFx 섹션에서 처음 등장
+- "notify an OS service called platform extension plug-in (PEP)"로 정의
+- 특정 프로세서 계열 또는 SoC에 특화된 전원 관리 플러그인
+- Windows 8.x에서 드라이버가 성능 상태 변경을 PEP에 직접 통지해야 했음
+- Windows 10 PoFx 확장으로 드라이버가 PEP에 직접 의존하지 않도록 추상화
+ 
+## SoC - System on a Chip
+ 
+PEP 설명에서 처음 등장
+- "a particular line of processors or system on a chip (SoC)"로 정의
+- CPU, GPU, 메모리 컨트롤러, I/O 인터페이스 등을 단일 칩에 통합한 설계
+- 모바일 기기, IoT 장치에 주로 사용
+- Windows 10 ARM 기반 디바이스(Surface Pro X 등)가 SoC 기반
