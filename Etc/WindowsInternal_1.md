@@ -759,3 +759,779 @@ Sysmain 서비스(SysMain.dll)로 구현
 - 최적화 엔진 : 유휴 시간에 예측 프리패칭 수행
  
 페이지 우선순위(0~7) 기반으로 대기 목록 내 페이지 관리 → 중요 페이지가 오래 유지됨
+
+---
+ 
+# 6. I/O 시스템
+ 
+## 6-1 I/O 시스템 설계 목표
+ 
+I/O 시스템의 핵심 목표는 물리, 논리, 가상 디바이스를 **일관된 방식으로 추상화**하는 것
+ 
+- 디바이스 전반에 걸친 균일한 보안과 명명 체계
+- 고성능 비동기 패킷 기반 I/O (스케일러블 서버 앱 구현용)
+- 드라이버를 C/C++ 고급 언어로 작성하고 다른 아키텍처로 이식 가능하게
+- 계층화·확장성 → 기존 드라이버를 수정하지 않고 새 드라이버 삽입 가능
+- 드라이버 동적 로드, 언로드
+- PnP 지원 → 드라이버 자동 탐지, 설치, 자원 할당
+- 전원 관리 지원
+- 다중 설치형 파일 시스템 지원 (FAT, NTFS, CDFS, UDF, ReFS 등)
+- WMI를 통한 드라이버 관리 및 모니터링
+## 6-2 I/O 시스템 구성 요소
+ 
+```
+유저 모드
+ └── 일반 애플리케이션 → CreateFile / ReadFile / WriteFile
+커널 모드
+ ├── I/O 관리자   ← IRP 생성, 전달, 처리 (핵심)
+ ├── PnP 관리자  ← 장치 감지, 드라이버 로드, 자원 할당
+ ├── 전원 관리자  ← 전원 상태 전환 정책 결정
+ ├── 디바이스 드라이버 스택
+ └── HAL
+```
+ 
+모든 I/O 요청은 가상 파일(virtual file)에 대한 연산으로 추상화된다
+ 
+`CreateFile`에서 C: 같은 이름은 오브젝트 관리자의 `GLOBAL??` 디렉터리의 심볼릭 링크 → 내부적으로 `\Device\HarddiskVolume7` 같은 이름에 연결
+ 
+드라이버는 Open, Close, Read, Write 같은 파일 지향 명령을 하드웨어 전용 명령으로 변환하는 역할을 한다
+ 
+## 6-3 IRQL (Interrupt Request Level)
+ 
+CPU별로 가지는 인터럽트 우선순위 레벨
+ 
+**기본 규칙** : 높은 IRQL 코드가 낮은 IRQL 코드를 선점한다. 반대는 불가
+ 
+| IRQL | 이름 | 실행 주체 |
+|------|------|---------|
+| 0 | PASSIVE_LEVEL | 일반 유저, 커널 코드 → 스케줄러 정상 동작 |
+| 1 | APC_LEVEL | APC 처리 |
+| 2 | DISPATCH_LEVEL | 스케줄러, DPC 처리. 이 이상이면 스케줄러 작동 불가 |
+| 3-26 (x86) / 3-12 (x64, ARM) | DIRQL | 하드웨어 인터럽트 처리 (ISR) |
+ 
+IRQL 2 이상에서의 제약 :
+ 
+- 커널 디스패처 오브젝트(뮤텍스, 이벤트 등) 대기 불가 → 시스템 크래시
+- 페이지 폴트 처리 불가 → 논페이지드 메모리만 접근 가능
+유저 모드는 항상 IRQL 0이므로 유저 모드 문서에는 IRQL 개념이 등장하지 않는다
+ 
+## 6-4 DPC (Deferred Procedure Call)
+ 
+하드웨어 인터럽트의 후속 작업을 IRQL 2에서 지연 실행하는 메커니즘
+ 
+ISR → DPC 처리 흐름 :
+ 
+```
+하드웨어 인터럽트 발생
+    → CPU 상태 저장, IRQL = DIRQL로 상승
+ISR 실행 (최소 작업 — 장치 상태 읽기, 인터럽트 신호 해제)
+    → KeInsertQueueDpc()로 DPC 큐에 삽입 후 ISR 반환
+보류 인터럽트 없으면 IRQL = 2로 하강
+DPC 처리 루프 — 순차 실행
+    → DPC 큐 비면 IRQL = 0 복구, 원래 코드 재개
+```
+ 
+DPC를 쓰는 이유 : DIRQL에서 계속 실행하면 그 이하 IRQL의 인터럽트가 모두 차단됨. 대부분의 처리를 IRQL 2로 내려 다른 인터럽트 서비스 지연을 최소화
+ 
+ISR과 DPC는 어떤 스레드 컨텍스트에서도 실행될 수 있음 → 특정 프로세스의 유저 모드 주소 공간에 의존하는 코드 작성 불가
+ 
+## 6-5 디바이스 드라이버 종류
+ 
+### 유저 모드 드라이버
+ 
+- Windows 서브시스템 프린터 드라이버 : 그래픽 요청 → 프린터 전용 명령 변환
+- UMDF 드라이버 : 유저 모드에서 실행하는 하드웨어 드라이버. ALPC로 커널 측과 통신
+### 커널 모드 드라이버
+ 
+| 유형 | 설명 |
+|------|------|
+| 파일 시스템 드라이버 | 파일 I/O 요청 → 스토리지·네트워크 드라이버 요청으로 변환 |
+| PnP 드라이버 | 하드웨어 직접 통신. 전원 관리자·PnP 관리자와 통합 |
+| 비PnP 드라이버 | 커널 확장 모듈. 실제 하드웨어 없음 (ex. Process Monitor 드라이버) |
+ 
+### WDM 드라이버 세 가지 역할
+ 
+| 역할 | 설명 | 생성 오브젝트 |
+|------|------|-------------|
+| 버스 드라이버 | 버스(PCI, USB, IEEE 1394 등) 관리. 연결된 장치 감지 → PnP 관리자에 보고 | PDO |
+| 기능 드라이버 | 장치의 실제 기능 구현. 장치를 가장 잘 알고 있음 | FDO |
+| 필터 드라이버 | 기능 드라이버 위(Upper) 또는 버스 드라이버 위(Lower)에 레이어링 | FiDO |
+ 
+### 계층화 드라이버 추가 분류
+ 
+- 클래스 드라이버 : 디스크·키보드·CD-ROM 등 표준화된 장치 클래스 공통 처리
+- 미니클래스 드라이버 : 제조사별 커스텀 구현. 클래스 드라이버 함수를 임포트하는 커널 DLL
+- 포트 드라이버 : SATA 같은 특정 I/O 포트 처리 라이브러리. 주로 Microsoft 작성
+- 미니포트 드라이버 : 특정 어댑터를 포트 드라이버에 연결. 제조사 작성. NDIS가 네트워크 포트 드라이버
+## 6-6 드라이버 구조
+ 
+드라이버는 I/O 관리자가 호출하는 루틴 집합으로 구성된다
+ 
+| 루틴 | 호출 시점 | IRQL |
+|------|---------|------|
+| DriverEntry (초기화) | 드라이버 로드 시 | 0 |
+| AddDevice | PnP 관리자가 장치 감지 시 | 0 |
+| 디스패치 루틴 | I/O 요청 도착 시 (IRP_MJ_READ 등) | 0 |
+| StartI/O | I/O 전송 시작 | 0 또는 임의 |
+| ISR | 하드웨어 인터럽트 발생 시 | DIRQL |
+| DPC 루틴 | ISR 이후 지연 처리 | 2 |
+| I/O 완료 루틴 | 하위 드라이버 IRP 완료 시 | 0~2 |
+| 취소 루틴 | I/O 취소 요청 시 | 2 |
+| Fast Dispatch 루틴 | 캐시 관리자 등이 IRP 우회할 때 | 0 |
+| 언로드 루틴 | 드라이버 제거 시 | 0 |
+ 
+### 드라이버 오브젝트 (DRIVER_OBJECT)
+ 
+드라이버 로드 시 I/O 관리자가 생성. 각 디스패치 루틴 주소를 저장
+ 
+### 디바이스 오브젝트 (DEVICE_OBJECT)
+ 
+드라이버가 `IoCreateDevice`로 생성. 물리·논리 장치를 표현. 모든 I/O 요청의 실제 대상
+ 
+## 6-7 I/O 요청 패킷 (IRP)
+ 
+I/O 요청을 표현하는 핵심 데이터 구조. I/O 시스템이 패킷 기반으로 동작하는 핵심 단위
+ 
+```
+IRP
+├── 주 함수 코드 (IRP_MJ_READ, IRP_MJ_WRITE, IRP_MJ_DEVICE_CONTROL 등)
+├── 상태 정보
+├── MDL 포인터 (물리 메모리 버퍼 서술)
+└── I/O 스택 위치 배열 (드라이버마다 하나씩)
+    └── [스택 위치 N] : minor 코드, 파라미터, 완료 루틴
+```
+ 
+프로세서별 룩어사이드 리스트에서 할당 (소형 1개, 중형 4개, 대형 14개 스택 위치)
+ 
+Fast I/O만 IRP를 사용하지 않는 예외이다
+ 
+## 6-8 I/O 유형
+ 
+| 유형 | 설명 |
+|------|------|
+| 동기 I/O | 완료될 때까지 호출 스레드 차단 (기본 ReadFile, WriteFile) |
+| 비동기 I/O | 즉시 반환. FILE_FLAG_OVERLAPPED 필요. 완료 시 이벤트, APC, 완료 포트로 알림 |
+| Fast I/O | IRP 생성 없이 드라이버 스택을 직접 호출. 파일 시스템 드라이버의 캐시 히트 경로에 활용 |
+| 매핑 파일 I/O | 파일을 가상 메모리처럼 접근. 메모리 관리자와 협력. 캐시 관리자, 이미지 로더가 활용 |
+| 스캐터/개더 I/O | ReadFileScatter / WriteFileGather. 단일 요청으로 여러 분산 버퍼 처리. 비캐시, 비동기, 정렬 필요 |
+ 
+## 6-9 단일 계층 드라이버의 I/O 처리 흐름
+ 
+요청 스레드 컨텍스트 : 원래 I/O를 요청한 스레드가 실행 중 → 유저 버퍼 주소 직접 접근 가능
+ 
+임의 스레드 컨텍스트 : 어떤 스레드가 실행 중인지 모름 → 유저 버퍼 직접 접근 불가, MDL·버퍼드 I/O 방식 필요
+ 
+처리 순서 :
+ 
+```
+[요청 스레드 - 유저 모드]
+1. ReadFile() 호출
+ 
+[요청 스레드 - 커널 모드]
+2. I/O 관리자 : IRP 생성, 드라이버 디스패치 루틴 호출 (IoCallDriver)
+3. 디스패치 루틴 : 파라미터 검증, IoStartPacket으로 StartI/O 호출 또는 IRP 큐 삽입
+4. StartI/O 루틴 : HAL을 통해 하드웨어 레지스터 프로그래밍
+ 
+[하드웨어 동작 중 → 완료 인터럽트 발생]
+ 
+[임의 스레드 - DIRQL]
+5. CPU 상태 저장, ISR 진입
+6. ISR : 장치 상태 저장, 인터럽트 해제, KeInsertQueueDpc
+ 
+[임의 스레드 - IRQL 2]
+7. DPC 루틴 :
+   ① IoStartNextPacket으로 다음 IRP 처리 시작 (장치 유휴 방지)
+   ② IoCompleteRequest로 현재 IRP 완료 → 완료 루틴 → 스레드 대기 해제
+ 
+[요청 스레드 재개]
+8. I/O 결과 반환
+```
+ 
+## 6-10 I/O 취소
+ 
+드라이버가 취소 루틴(`IoSetCancelRoutine`)을 등록하지 않은 IRP를 무기한 보류하면 프로세스가 종료 불가 상태가 된다 (unkillable process 현상)
+ 
+| 함수 | 설명 |
+|------|------|
+| CancelIo | 현재 스레드의 특정 파일 핸들 비동기 I/O 취소 |
+| CancelIoEx | 같은 프로세스의 특정 파일 핸들 전체 스레드 비동기 I/O 취소 |
+| CancelSynchronousIo | 다른 스레드의 동기 I/O 취소 |
+ 
+스레드 종료 시 I/O 관리자가 해당 스레드의 IRP 목록을 순회해 취소 루틴이 등록된 IRP를 모두 취소한다. 취소가 완료될 때까지 스레드·프로세스 오브젝트는 해제되지 않는다
+ 
+## 6-11 I/O 완료 포트
+ 
+고성능 서버 애플리케이션을 위한 비동기 I/O 통지 메커니즘. `IoCompletion` 익스큐티브 오브젝트 기반
+ 
+**핵심 아이디어** : 동시성 값(Concurrency Value)으로 활성 스레드 수를 OS가 자동 제어 → 불필요한 컨텍스트 스위치 방지
+ 
+동작 원리 :
+ 
+- `CreateIoCompletionPort`로 완료 포트 생성 (내부에 KQUEUE 커널 오브젝트 초기화)
+- 파일 핸들을 포트에 연결
+- 스레드들이 `GetQueuedCompletionStatus(Ex)`로 완료 패킷 대기 (LIFO 순서로 깨어남)
+- 비동기 I/O 완료 시 패킷이 포트 큐에 삽입 → 대기 스레드 하나가 깨어남
+- 활성 스레드가 블록되면 대기 스레드가 자동으로 깨어나 동시성 한도 유지
+권장 동시성 값 = 논리 프로세서 수
+ 
+`PostQueuedCompletionStatus`로 커스텀 패킷을 직접 삽입 가능 (서버 종료 신호 전달 등)
+ 
+## 6-12 PnP 관리자
+ 
+하드웨어·드라이버·OS가 협력하는 3계층 메커니즘
+ 
+### 핵심 기능
+ 
+- 장치 자동 감지 : 부팅 시, 최대절전 복귀 시, 명시적 요청 시 장치 열거
+- 하드웨어 자원 할당 : 자원 중재(Resource Arbitration)로 인터럽트·I/O 메모리·레지스터를 최적 할당
+- 드라이버 자동 로드 : 장치 ID 기반으로 적합한 드라이버 탐색·로드. 미설치 시 유저 모드 PnP 관리자에 설치 요청
+- 장치 상태 변경 알림 : 앱·드라이버에 장치 추가/제거 알림
+- 네트워크 연결 장치 지원 : 버스 드라이버가 네트워크를 버스로 인식해 장치 노드 생성
+### 장치 트리와 데브노드
+ 
+PnP 관리자가 내부적으로 관리하는 장치 계층 구조. 노드를 데브노드(devnode)라 부름
+ 
+Root (가상 버스) → HAL → 주 버스(PCI) → USB·ISA·SCSI 버스 → 각 장치
+ 
+### 장치 스택 구조
+ 
+```
+상위 필터 드라이버 (FiDO) ← 선택사항
+        ↑
+기능 드라이버 (FDO) ← 필수, FDO 하나만 존재
+        ↑
+하위 필터 드라이버 (FiDO) ← 선택사항
+        ↑
+버스 드라이버 (PDO) ← 필수, 항상 맨 아래
+```
+ 
+IRP는 스택 상단에서 하단으로 전달되며 각 드라이버가 자신의 스택 위치에서 파라미터를 읽고 처리한다
+ 
+### PnP 장치 상태 전환 주요 IRP
+ 
+| IRP | 의미 |
+|-----|------|
+| IRP_MN_START_DEVICE | 장치 시작 |
+| IRP_MN_QUERY_STOP_DEVICE | 자원 재배치를 위한 일시 중단 가능 여부 질의 |
+| IRP_MN_STOP_DEVICE | 장치 일시 중단 |
+| IRP_MN_QUERY_REMOVE_DEVICE | 장치 제거 가능 여부 질의 |
+| IRP_MN_REMOVE_DEVICE | 장치 제거 |
+| IRP_MN_SURPRISE_REMOVAL | 예고 없는 장치 제거 (사용자가 뽑아버린 경우) |
+ 
+### 드라이버 로드 순서 (Start 값)
+ 
+| 값 | 이름 | 로드 시점 | 예시 |
+|---|------|---------|------|
+| 0 | boot-start | 부트 로더 | 시스템 버스 드라이버, 부트 파일 시스템 |
+| 1 | system-start | I/O 관리자 (Executive 초기화 후) | 시리얼 포트 드라이버 |
+| 2 | auto-start | 자동 시작 | MUP (UNC 경로 지원) |
+| 3 | demand-start | PnP 장치 감지 시 | 네트워크 어댑터 드라이버 |
+ 
+### 드라이버 설치
+ 
+PnP 드라이버 : INF 파일 필수. 하드웨어 장치 ID, 파일 복사 지침, 레지스트리 수정, 의존성 정보 포함
+ 
+소프트웨어 전용 드라이버 (ex. Process Explorer의 PROCEXP152) : INF 없이 `CreateService` API로 설치 후 `StartService`로 로드 가능
+ 
+## 6-13 Windows Driver Foundation (WDF)
+ 
+오픈소스 드라이버 개발 프레임워크 (https://github.com/Microsoft/Windows-Driver-Frameworks)
+ 
+WDM의 복잡성(PnP·전원·I/O 큐잉·DMA·동기화)을 자동 처리하는 추상화 계층
+ 
+### KMDF (Kernel-Mode Driver Framework)
+ 
+WDM 기반 드라이버의 공통 작업을 자동 처리
+ 
+KMDF 핵심 개념 :
+ 
+- 오브젝트 계층 : WDFDRIVER → WDFDEVICE → WDFQUEUE → WDFREQUEST 등 부모-자식 관계. 부모 삭제 시 자식도 자동 해제
+- 컨텍스트 영역 : 모든 WDF 오브젝트에 드라이버 전용 데이터를 붙일 수 있음
+- I/O 큐 : Parallel·Sequential·Manual 세 가지 자동 디스패칭. 드라이버가 IRP 대신 WDFREQUEST 래퍼 사용
+유니버설 Windows 드라이버 (Windows 10~) : IoT Core, Mobile, 데스크톱 모두에서 바이너리 호환. KMDF, UMDF 2.x, WDM으로 구축 가능
+ 
+### UMDF (User-Mode Driver Framework)
+ 
+드라이버를 유저 모드(WUDFHost.exe 프로세스 내)에서 실행
+ 
+장점 :
+ 
+- 크래시 시 시스템이 아닌 호스트 프로세스만 종료
+- Local Service 계정으로 실행 → 공격 표면 최소화
+- 항상 IRQL 0 → 페이지 폴트 처리 가능, 디스패처 오브젝트 사용 가능
+- 디버깅이 KMDF보다 쉬움 (두 머신 불필요)
+단점 : 커널/유저 전환으로 인한 추가 지연. 고속 PCI 장치에는 부적합
+ 
+적합한 대상 : IEEE 1394, USB, Bluetooth, HID, TCP/IP 프로토콜 기반 장치
+ 
+UMDF 아키텍처 구성 요소 :
+ 
+| 구성 요소 | 역할 |
+|---------|------|
+| 리플렉터 (WUDFRd.sys) | 디바이스 스택 최상단의 WDM 필터 드라이버. IRP를 ALPC로 호스트 프로세스에 전달 |
+| 드라이버 관리자 (WUDFsvc.dll) | 호스트 프로세스 시작·종료 관리. 자동 시작 Windows 서비스 |
+| 호스트 프로세스 (WUDFHost.exe) | 실제 UMDF 드라이버가 실행되는 주소 공간. 장치 인스턴스마다 별도 프로세스 |
+ 
+## 6-14 전원 관리자
+ 
+ACPI 사양 기반으로 시스템·장치 전원 상태를 관리한다
+ 
+### 시스템 전원 상태 (S 상태)
+ 
+| 상태 | 이름 | 설명 |
+|------|------|------|
+| S0 | 완전 동작 | CPU 활성, 모든 기능 사용 |
+| S1~S3 | 절전 (슬립) | 메모리 내용 유지. S3이 가장 일반적 |
+| S4 | 최대절전 | 메모리 내용을 Hiberfil.sys에 저장 후 전원 차단. Winresume.exe가 복원 |
+| S5 | 완전 차단 | 소프트웨어 상태 없음. 정상 부팅 필요 |
+| S0 Low Power Idle | Modern Standby | S0이지만 CPU 활동 최소화. UWP 백그라운드 작업만 허용. Instant On 가능 |
+ 
+하이브리드 슬립 : S3(메모리 유지) + S4(응급 최대절전 파일 생성) 조합. 전원 차단 시 S4에서 안전하게 복구
+ 
+### 장치 전원 상태 (D 상태)
+ 
+| 상태 | 설명 |
+|------|------|
+| D0 | 완전 동작 |
+| D1, D2 | 장치별 중간 절전 |
+| D3-hot | 대부분 꺼짐, 주전원 연결 유지. 버스 컨트롤러가 장치 인식 가능 |
+| D3-cold | 주전원 차단 (Windows 8~). 최대 절전 |
+ 
+### 전원 관리자 동작 원리
+ 
+시스템 전원 상태 전환 결정 요소 : 시스템 활동 수준, 배터리 잔량, 앱의 종료·최대절전 요청, 사용자 동작(전원 버튼), 제어판 전원 설정
+ 
+전환 시 `IRP_MJ_POWER`로 드라이버에 전달 → 장치 전원 정책 소유자(FDO)가 적절한 D 상태 결정 → `PoRequestPowerIrp`로 전원 관리자에 요청 → 전원 관리자가 다른 드라이버에 전달
+ 
+드라이버는 전원 전환에 거부권을 행사할 수 없다 (최대절전은 항상 성공). 최대 2초간 상태 정리 허용
+ 
+### PoFx (Power Management Framework, Windows 8~)
+ 
+장치 내부의 개별 컴포넌트별 전원 상태 관리 프레임워크
+ 
+F 상태 : F0(완전 동작) ~ Fn(저전력). D0 상태에서만 의미 있음
+ 
+- `PoFxRegisterDevice` : 장치를 PoFx에 등록
+- `PoFxActivateComponent` : 컴포넌트를 F0으로 요청
+- `PoFxIdleComponent` : 컴포넌트가 불필요해졌음을 알림
+Windows 10에서 성능 상태 관리 추가 : GPU 클록 주파수, 대역폭 등 D0 상태에서의 소비 전력 세밀 제어 (`PoFxRegisterComponentPerfStates`)
+ 
+### 전원 가용성 요청
+ 
+앱·드라이버가 특정 전원 전환을 방지하는 요청. 커널 오브젝트 관리자에 등록된 정식 오브젝트
+ 
+| 요청 유형 | 설명 |
+|---------|------|
+| System Request | 유휴 타이머로 인한 슬립 방지 |
+| Display Request | 화면 꺼짐 방지 |
+| Away Mode | 슬립처럼 보이지만 실제로는 S0 유지. 미디어 계속 전달용 |
+| Execution Required | UWP 앱 프로세스 계속 실행 요청 (Modern Standby 지원 시스템에서) |
+ 
+`PowerCreateRequest` / `PowerSetRequest` / `PowerClearRequest` (유저 모드)
+ 
+`PoCreatePowerRequest` / `PoSetPowerRequest` / `PoClearPowerRequest` (커널 모드)
+
+---
+ 
+# 7. 보안 (Security)
+ 
+## 7-1 보안 등급
+ 
+Windows 설계에 영향을 준 두 가지 보안 평가 기준이 있다
+ 
+**TCSEC (Trusted Computer System Evaluation Criteria)** : 미국 오렌지북. C2 등급을 목표로 설계됨. 자원 접근 제어, 감사, 사용자 인증, 메모리 재사용 보호 등 요구
+ 
+**CC (Common Criteria)** : TCSEC를 대체하는 현행 국제 보안 평가 표준. Windows는 CAPP(Controlled Access Protection Profile) 하에 CC 인증 획득
+ 
+## 7-2 보안 시스템 구성 요소
+ 
+| 구성 요소 | 위치 | 역할 |
+|---------|------|------|
+| SRM (Security Reference Monitor) | 커널 (Ntoskrnl.exe) | 액세스 토큰 정의, 보안 접근 검사, 권한 조작, 감사 메시지 생성 |
+| Lsass.exe | 유저 모드 | 로컬 보안 정책, 사용자 인증, 보안 감사 메시지를 이벤트 로그에 전송 |
+| LsaIso.exe | VTL 1 Trustlet (Credential Guard 시) | 사용자 토큰 해시를 Lsass 메모리 대신 VTL 1에 격리 저장 |
+| Lsass 정책 DB | 레지스트리 HKLM\SECURITY | 도메인 신뢰 관계, 접근 권한, 권한(Privilege), 감사 정책 |
+| SAM 서비스 (Samsrv.dll) | Lsass 프로세스 내 | 로컬 사용자·그룹 데이터베이스 관리 |
+| SAM 데이터베이스 | 레지스트리 HKLM\SAM | 로컬 사용자·그룹 정보, 비밀번호, 속성 |
+| Active Directory (Ntdsa.dll) | Lsass 프로세스 내 | 도메인 사용자·그룹·컴퓨터 정보. 도메인 컨트롤러 간 복제 |
+| Winlogon.exe | 유저 모드 | SAS(Ctrl+Alt+Del) 처리, 로그온 세션 관리, 첫 번째 프로세스 시작 |
+| LogonUI.exe | 유저 모드 | 자격 증명 공급자(CP)를 로드해 로그온 UI 제공. Winlogon 보호용 별도 프로세스 |
+| 자격 증명 공급자 (CP) | LogonUI 내 COM 오브젝트 | 비밀번호, 스마트카드, 생체인식 등 자격 증명 획득 |
+| Netlogon | SvcHost 서비스 | 도메인 컨트롤러로의 보안 채널 설정, NTLM/Active Directory 인증 중계 |
+| KSecDD (Ksecdd.sys) | 커널 모드 | EFS 등 커널 보안 컴포넌트가 Lsass와 통신하는 ALPC 인터페이스 제공 |
+| AppLocker (AppId.sys) | 커널 드라이버 + 서비스 | 실행 가능한 파일·DLL·스크립트를 사용자·그룹별로 제한 |
+ 
+SRM(커널)과 Lsass(유저 모드)는 ALPC로 통신. 시스템 초기화 후 연결이 고정되어 이후 다른 프로세스가 이 포트에 연결 불가 → 악의적 연결 차단
+ 
+## 7-3 가상화 기반 보안 (VBS)
+ 
+수백만 개의 서드파티 드라이버 중 하나라도 취약점이 있으면 커널을 완전히 신뢰할 수 없다. VBS는 이 문제를 하이퍼바이저를 통해 해결한다
+ 
+VTL 구조 :
+ 
+```
+하이퍼바이저
+├── VTL 1 : 보안 커널 + IUM(Isolated User Mode)
+│   ├── HVCI (HyperVisor Code Integrity)  ← Device Guard 핵심
+│   ├── LsaIso.exe (Trustlet)             ← Credential Guard 핵심
+│   └── SKCI.DLL (Secure Kernel Code Integrity)
+└── VTL 0 : 일반 NT 커널 + 드라이버 + 일반 앱
+```
+ 
+VTL 1 신뢰 전제 조건 : Secure Boot(펌웨어), 하이퍼바이저 무결성, IOMMU 정상 동작
+ 
+## 7-4 Credential Guard
+ 
+사용자 인증 자격증명을 VTL 1의 LsaIso.exe Trustlet에 격리해 커널 레벨 공격자도 탈취 불가하게 한다
+ 
+보호 대상 자격증명 3가지 :
+ 
+| 자격증명 | 설명 | 위험성 |
+|---------|------|--------|
+| Password | 사용자 인터랙티브 인증 기본 자격증명 | 가장 가치 높음. WDigest/RDP SSO용 평문 보관 필요 |
+| NT OWF (NT One-Way Function) | NTLM 프로토콜용 비밀번호 MD4 해시 | 인터셉트 시 즉시 사용 가능, 비밀번호 복원 가능 |
+| TGT (Ticket-Granting Ticket) | Kerberos 인증 티켓 + 키 | 인터셉트 시 도메인 리소스 무단 접근 가능 |
+ 
+보호 방식 : Lsass가 KDC에서 받은 TGT/NTOWF를 ALPC로 LsaIso에 전달 → VTL 1에 암호화 저장 → Lsass는 암호화된 blob만 보유 → 서비스 티켓 생성 시 LsaIso가 처리
+ 
+추가 보호 : Lsass를 PPL(Protected Process Light)로 실행 (RunAsPPL 레지스트리 값 = 1)
+ 
+Credential Guard 한계 : WDigest·Terminal Services처럼 평문 비밀번호가 필요한 프로토콜에는 SSO 기능 비활성화가 유일한 해결책 → Windows Hello(생체인식)로 아예 비밀번호 입력을 없애는 것이 최선
+ 
+## 7-5 Device Guard
+ 
+기기 자체를 소프트웨어·하드웨어 기반 공격으로부터 보호하는 기능
+ 
+핵심 기술 구성 :
+ 
+- KMCS (Kernel-Mode Code Signing) : 커널 모드 드라이버 서명 강제
+- UMCI (User-Mode Code Integrity) : 사용자 모드 이미지 서명 강제
+- HVCI (HyperVisor Code Integrity) : SLAT(하이퍼바이저 2차 주소 변환)로 서명 검증을 VTL 1에서 수행
+- CCI (Custom Code Integrity) : 기업 관리자가 정의한 커스텀 서명 정책
+Device Guard의 주요 보장 (KMCS 강제 시) :
+ 
+- 서명된 코드만 로드 가능 (커널이 침해되더라도)
+- 로드된 서명 코드는 커널 자신도 수정 불가 (SLAT로 읽기 전용 보호)
+- 동적 코드 할당 금지
+- UEFI 런타임 코드 수정 불가
+- W^X(Write XOR Execute) 모델 : SLAT가 실행 가능 페이지에 쓰기 불가, 쓰기 가능 페이지에 실행 불가
+MBEC(Mode-Based Execution Control) : 하드웨어 지원 시 SLAT에 유저/커널 실행 비트를 추가 → ring 0 서명 코드만 커널 모드에서 실행 가능
+ 
+## 7-6 객체 보호 (Protecting Objects)
+ 
+Windows에서 보호 가능한 거의 모든 리소스는 오브젝트로 표현된다 (파일, 프로세스, 스레드, 레지스트리 키, 이벤트, 뮤텍스, 섹션 등)
+ 
+스레드가 오브젝트에 접근할 때 `ObpGrantAccess` → `ObCheckObjectAccess` → `SeAccessCheck` 순으로 호출된다
+ 
+보안 검사 3가지 입력 :
+ 
+1. 스레드의 보안 자격증명 (토큰)
+2. 요청하는 접근 유형 (읽기, 쓰기, 삭제 등)
+3. 오브젝트의 보안 설정 (보안 서술자)
+스레드는 오브젝트를 열 때 필요한 정확한 접근 마스크만 요청해야 한다 (PROCESS_ALL_ACCESS 남용 금지)
+ 
+## 7-7 보안 식별자 (SID)
+ 
+사용자, 그룹, 컴퓨터, 서비스를 고유하게 식별하는 가변 길이 숫자 값
+ 
+형식 : `S-개정번호-식별자권한-하위권한값들-RID`
+ 
+```
+S-1-5-21-1463437245-1224812800-863842198-1128
+│ │ │  └─────────── 하위권한값들 (도메인/컴퓨터 고유 부분)
+│ │ └── 5 = Windows 보안 기관
+│ └── 1 = 개정번호
+└── S
+```
+ 
+주요 잘 알려진 SID :
+ 
+| SID | 의미 |
+|-----|------|
+| S-1-1-0 | Everyone (익명 제외 모든 계정) |
+| S-1-5-2 | Network (네트워크 로그온 사용자) |
+| S-1-5-18 | SYSTEM |
+| S-1-5-19 | Local Service |
+| S-1-5-32-544 | Administrators 그룹 |
+| S-1-15-2-1 | ALL_APP_PACKAGES |
+ 
+RID 규칙 : Administrator = 500, Guest = 501. 일반 계정/그룹 = 1000부터 1씩 증가
+ 
+## 7-8 무결성 레벨 (Integrity Levels)
+ 
+같은 사용자 계정 내에서도 프로세스와 오브젝트를 격리하는 MIC(Mandatory Integrity Control) 메커니즘
+ 
+| 레벨 | SID | 대표 사용처 |
+|------|-----|-----------|
+| Untrusted | S-1-16-0 | 익명 프로세스 |
+| Low | S-1-16-4096 | 보호 모드 Internet Explorer |
+| Medium | S-1-16-8192 | 일반 사용자 프로세스 (기본값) |
+| High | S-1-16-12288 | 관리자 권한 상승 프로세스 |
+| System | S-1-16-16384 | 시스템 서비스, 커널 |
+| Protected Process | S-1-16-20480 | 보호 프로세스 |
+ 
+AppContainer (UWP 앱) : 수준은 Low와 동일하지만 토큰에 AppContainer 플래그를 별도로 보유
+ 
+오브젝트 필수 정책(Mandatory Policy) 세 가지 :
+ 
+| 정책 | 설명 |
+|------|------|
+| No-Write-Up | 낮은 무결성 프로세스가 높은 무결성 오브젝트에 쓰기 불가 (기본값) |
+| No-Read-Up | 낮은 무결성 프로세스가 높은 무결성 오브젝트를 읽기 불가 |
+| No-Execute-Up | 낮은 무결성 프로세스가 높은 무결성 코드를 실행 불가 |
+ 
+## 7-9 액세스 토큰 (Access Token)
+ 
+프로세스 또는 스레드의 보안 컨텍스트를 표현하는 커널 오브젝트
+ 
+토큰의 주요 내용 :
+ 
+- 사용자 계정 SID
+- 그룹 SID 목록 (소속 그룹)
+- 권한(Privilege) 배열
+- 무결성 레벨
+- 세션 ID
+- UAC 가상화 상태
+- AppContainer 정보 (UWP 프로세스)
+- 토큰 유형 : Primary(프로세스 토큰) vs Impersonation(스레드 가장 토큰)
+- 기본 DACL
+로그온 시 Lsass가 초기 토큰을 생성. 관리자 그룹·강력한 권한 보유 확인 후 Filtered Admin Token(제한된 토큰)과 Full Admin Token 두 개를 생성 → 일반 세션은 제한된 토큰으로 실행
+ 
+토큰 필드는 커널 메모리에 있어 유저 모드에서 직접 수정 불가 (특정 시스템 콜과 적절한 접근 권한으로만 변경 가능)
+ 
+## 7-10 계정 권한과 권한(Privilege)
+ 
+### 계정 권한 (Account Rights)
+ 
+특정 유형의 로그온(인터랙티브, 네트워크, 배치, 서비스, 터미널 서버)을 허용하거나 거부. SRM이 아닌 LSA가 로그온 시 확인. 토큰에 저장되지 않음
+ 
+### 권한(Privilege)
+ 
+특정 시스템 관련 작업을 수행하는 계정의 권한. 컴포넌트마다 각자 확인
+ 
+주요 슈퍼 권한 (사실상 관리자 전권) :
+ 
+| 권한 | 내부 이름 | 위험성 |
+|------|---------|-------|
+| Debug programs | SeDebugPrivilege | 모든 프로세스 메모리 직접 접근, 코드 주입 가능 |
+| Take ownership | SeTakeOwnershipPrivilege | 모든 보안 가능한 오브젝트의 소유권 탈취 가능 |
+| Restore files | SeRestorePrivilege | 시스템 파일 교체 가능 |
+| Load/unload drivers | SeLoadDriverPrivilege | 임의 드라이버 로드 → System 계정 권한으로 코드 실행 |
+| Create token | SeCreateTokenPrivilege | 임의 SID와 권한을 가진 토큰 생성 |
+| Act as OS | SeTcbPrivilege | 신뢰된 Lsass 연결 설정 후 새 로그온 세션에 임의 SID 추가 가능 |
+ 
+권한은 활성화/비활성화 가능. 권한 검사 성공 조건 : 토큰에 존재 AND 활성화 상태. `AdjustTokenPrivileges`로 전환
+ 
+## 7-11 보안 서술자 (Security Descriptor)와 접근 제어
+ 
+모든 보안 가능한 오브젝트는 보안 서술자를 가진다
+ 
+보안 서술자 구성 :
+ 
+- Owner SID : 오브젝트 소유자
+- Group SID : 오브젝트 주 그룹
+- DACL (Discretionary Access Control List) : 접근 허용/거부 ACE 목록. NULL DACL = 모두 허용, 빈 DACL = 모두 거부
+- SACL (System Access Control List) : 감사 ACE 목록
+ACE(Access Control Entry) 구성 : 유형(허용/거부/감사) + SID + 접근 마스크
+ 
+```
+보안 서술자
+├── Owner SID
+├── Group SID
+├── DACL (임의 접근 제어 목록)
+│   ├── ACE 1 : 허용, Alice, 읽기·쓰기
+│   ├── ACE 2 : 거부, Bob, 쓰기
+│   └── ACE 3 : 허용, Everyone, 읽기
+└── SACL (시스템 접근 제어 목록)
+    └── ACE 1 : 감사, 실패, Everyone, 쓰기
+```
+ 
+접근 검사 알고리즘 (SeAccessCheck) : 요청된 접근 마스크를 DACL의 ACE와 순서대로 비교. 거부 ACE가 허용 ACE보다 우선
+ 
+## 7-12 보안 감사 (Security Auditing)
+ 
+`SeSecurityPrivilege` : 보안 이벤트 로그 관리 권한
+ 
+`SeAuditPrivilege` : 감사 메시지 생성 권한
+ 
+오브젝트 접근 감사 : Audit Object Access 정책 활성화 + 오브젝트의 SACL에 감사 ACE 필요 → 접근 시도 시 성공/실패 원인을 포함한 감사 레코드 생성
+ 
+전역 감사 정책 (Global Audit Policy) : 모든 파일 시스템 또는 레지스트리 키에 대해 SACL 없이도 감사 가능 → `AuditPol /resourceSACL` 명령으로 설정
+ 
+## 7-13 AppContainer
+ 
+Windows 8에서 도입된 UWP 프로세스용 보안 샌드박스. 원래 코드명은 LowBox
+ 
+### AppContainer 보안 환경
+ 
+AppContainer 토큰의 접근 검사 특징 :
+ 
+- 일반 사용자·그룹 SID는 deny-only로 처리 → 사용자 자신의 SID로도 접근 불가
+- NULL DACL도 거부로 처리 (일반적으로 NULL DACL = 모두 허용이지만 AppContainer에서는 예외)
+- AppContainer SID 또는 capability SID에 명시적 허용 ACE가 있는 오브젝트만 접근 가능
+### AppContainer 격리 환경 (4가지 Jail)
+ 
+| 격리 영역 | 구현 |
+|---------|------|
+| 명명된 커널 오브젝트 | 오브젝트 관리자 namespace의 `\Sessions\x\AppContainerNamedObjects\{AppContainer SID}` |
+| 전용 atom 테이블 | Win32k.sys가 전역 atom 테이블 접근 차단 → AppContainer별 전용 atom 테이블 |
+| 전용 파일 시스템 | `%LOCALAPPDATA%\Packages\{패키지명}` 하위 디렉터리 (AppContainer SID로 ACL) |
+| 전용 레지스트리 | `Settings.dat` 하이브 파일 (AppContainer SID로 ACL) |
+ 
+### ALL APPLICATION PACKAGES SID (S-1-15-2-1)
+ 
+모든 AppContainer 토큰에 자동으로 바인딩되는 그룹 SID. `%SystemRoot%\System32`, `HKLM\Software\Microsoft\Windows\CurrentVersion` 등 핵심 시스템 위치에 이 SID가 읽기·실행 허용 ACE로 등록되어 AppContainer가 기본 시스템 리소스에 접근 가능
+ 
+Restricted AppContainer (Windows 10 1607~) : `PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY`로 ALL APPLICATION PACKAGES SID 접근도 차단. 대신 ALL RESTRICTED APPLICATION PACKAGES SID로 최소한의 시스템 접근 보장
+ 
+### AppContainer Capabilities
+ 
+UWP 개발자가 앱 매니페스트에 선언하는 기능 목록. 각 capability는 SID로 변환되어 토큰에 포함
+ 
+capability SID 생성 방법 3가지 :
+ 
+- 잘 알려진 capability : 하드코딩된 RID (S-1-15-3-N)
+- 문자열 capability : 대문자 변환 후 SHA-2 해시 → 8개 RID
+- 장치 capability : GUID → 4개 RID
+capability 유형 :
+ 
+| 유형 | 설명 |
+|------|------|
+| Capability | Windows 8 기본 capability (internetClient 등) |
+| uap:Capability | 표준 스토어 앱 capability |
+| rescap:Capability | 제한 capability (Microsoft 특별 승인 필요) |
+| wincap:Capability | Windows 시스템 앱 전용 |
+| DeviceCapability | 하드웨어 장치 접근 (microphone, camera 등) |
+ 
+## 7-14 로그온
+ 
+인터랙티브 로그온 관련 컴포넌트 : Winlogon ↔ LogonUI (CP 포함) ↔ Lsass ↔ 인증 패키지 ↔ SAM/Active Directory
+ 
+### 로그온 흐름
+ 
+1. 사용자가 SAS(Ctrl+Alt+Del) 입력
+2. Win32k.sys가 RPC 메시지로 Winlogon에 통보
+3. Winlogon이 LogonUI를 시작 → CP가 사용자 이름·비밀번호 획득
+4. Winlogon이 LsaLogonUser를 호출해 인증 패키지에 자격 증명 전달
+5. 인증 패키지가 SAM 또는 도메인 컨트롤러에서 계정 정보 확인
+6. 인증 성공 시 Lsass가 사용자 토큰 생성 → Winlogon이 사용자 첫 프로세스 시작
+### SAS 보안
+ 
+- Win32k.sys가 Ctrl+Alt+Del를 전용 예약 → 어떤 앱도 가로챌 수 없음
+- SetWindowsHookEx로 설치한 훅도 SAS에는 적용되지 않음
+- Winlogon만 데스크톱을 잠그거나 잠금 해제 가능
+### 두 가지 인증 패키지
+ 
+| 패키지 | 사용 시나리오 |
+|--------|-------------|
+| MSV1_0 (Msv1_0.dll) | 로컬 컴퓨터 로그온, 도메인 컨트롤러 접근 불가 시 |
+| Kerberos (Kerberos.dll) | Windows 도메인 멤버 컴퓨터. RFC 1510 기반 |
+ 
+### Winlogon 초기화
+ 
+1. 인터랙티브 윈도우 스테이션 생성 (SYSTEM SID만 접근 허용)
+2. 두 개의 데스크톱 생성 : Application(일반 앱) + Winlogon(보안 데스크톱, Winlogon만 접근)
+3. Lsass와 ALPC 연결 설정
+4. Win32k에서 SAS·로그오프·워크스테이션 잠금 알림을 받는 RPC 메시지 서버 등록
+## 7-15 UAC (User Account Control)
+ 
+표준 사용자 권한으로 실행하는 것이 원칙. 필요 시에만 관리자 권한을 상승(Elevation)해 사용하는 메커니즘. Windows Vista에서 도입
+ 
+UAC 주요 해결 과제 :
+ 
+- 관리자 권한을 가정한 레거시 앱 호환성
+- 표준 사용자가 가끔 필요한 관리자 작업 수행
+관리자 계정 로그온 시 Filtered Admin Token (표준 사용자 수준)과 Full Admin Token 두 개 생성 → 일반 프로세스는 Filtered Token으로 실행
+ 
+UAC는 보안 경계가 아닌 편의 기능이다. 악성코드가 표준 사용자 권한으로 실행 중이더라도 상승된 프로세스를 통해 관리자 권한을 얻을 수 없다는 보장이 없다
+ 
+### 파일 시스템 및 레지스트리 가상화
+ 
+레거시 앱이 시스템 전역 위치(%ProgramFiles%, %SystemRoot%, HKLM\Software 등)에 쓰려 하면 접근 거부 대신 사용자별 위치로 리다이렉트
+ 
+파일 가상화 : `%LocalAppData%\VirtualStore`로 리다이렉트. `Luafv.sys` 파일 시스템 필터 드라이버 구현
+ 
+레지스트리 가상화 : `HKCU\Software\Classes\VirtualStore`로 리다이렉트. 구성 관리자에서 구현
+ 
+가상화 비활성화 조건 : 64비트 앱, 이미 관리자 권한으로 실행 중, 커널 모드 호출, 가장 중, UAC 호환 매니페스트 보유, 서비스
+ 
+### Elevation (권한 상승)
+ 
+앱이 관리자 권한을 요청하는 방법 :
+ 
+- 요청된 실행 레벨(requestedExecutionLevel)을 매니페스트에 선언
+  - asInvoker : 부모 토큰 그대로
+  - highestAvailable : 가능한 가장 높은 권한
+  - requireAdministrator : 관리자 권한 필수
+UAC 프롬프트 종류 :
+ 
+| 유형 | 조건 | 표시 내용 |
+|------|------|---------|
+| 동의 프롬프트 | 관리자가 관리자 권한 필요 앱 실행 | 허용 여부만 확인 |
+| 자격증명 프롬프트 | 표준 사용자가 관리자 권한 필요 앱 실행 | 관리자 계정/비밀번호 입력 |
+ 
+## 7-16 AppLocker
+ 
+관리자가 특정 사용자·그룹에 대해 실행 가능한 파일을 제어하는 메커니즘 (Windows 8.1/10 Enterprise, Server 2012 이상)
+ 
+SRP(Software Restriction Policies)의 개선판 : 사용자·그룹별 규칙 적용 가능, 감사 모드 지원
+ 
+제어 가능한 파일 유형 : EXE, COM, DLL, OCX, MSI, MSP, 스크립트(PS1, BAT, VBS, JS)
+ 
+규칙 기준 세 가지 :
+ 
+| 기준 | 설명 |
+|------|------|
+| 서명 인증서 | 게시자, 제품명, 파일명, 버전 조합 |
+| 디렉터리 경로 | 특정 경로 내 파일만 허용 |
+| 파일 해시 | SHA-256 해시 일치 여부 |
+ 
+AppLocker 동작 원리 :
+ 
+- `AppId.sys` 드라이버가 `PsSetCreateProcessNotifyRoutineEx`로 프로세스 생성 알림 등록
+- 프로세스 생성 시 AppID 속성 수집 → 토큰에 저장 → `SeSrpAccessCheck`로 규칙 검사
+- DLL 제한 : 이미지 로더가 DLL 로드마다 AppId 드라이버에 DeviceIoControl 요청
+- 스크립트 엔진·MSI 설치 관리자 : 유저 모드 SRP API 직접 호출
+규칙은 조건부 ACE(Conditional ACE)와 AppID 속성으로 구현. `secpol.msc`나 그룹 정책으로 설정
+ 
+## 7-17 커널 패치 보호 (KPP / PatchGuard)
+ 
+드라이버가 시스템 콜 테이블 패치, 커널 이미지 수정 등 비지원 방식으로 커널을 변경하는 것을 감지하는 메커니즘. x64·ARM Windows에만 적용 (32비트 레거시 드라이버 호환성으로 x86 미적용)
+ 
+PatchGuard는 보안 경계가 아니다 → 공격을 막거나 되돌리지 않음. 감지 시 BSOD로 시스템을 충돌시켜 추가 실행을 차단하는 것이 전부. CCTV + 경보 시스템으로 이해하면 적절하다
+ 
+PatchGuard의 특징 :
+ 
+- 보호 대상·검사 시점·검사 방법 비공개 및 난독화 (공격자의 예측 어렵게)
+- 비결정적 실행 (비결정성이 신뢰성 높은 우회 방지)
+- 감지 시 커널 모드 크래시 덤프 생성 → Microsoft에 자동 전송 (텔레메트리)
+- 디버그 모드 + 원격 커널 디버거 연결 시 비활성화
+보호 내용 (공개된 범위) :
+ 
+- 커널 실행 코드와 데이터
+- 시스템 서비스 서술자 테이블 (SSDT)
+- 인터럽트 서술자 테이블 (IDT), GDT, MSR
+- 프로세스 연결 리스트 (PsActiveProcessHead)
+- 커널 스택
+PatchGuard 대신 사용 가능한 지원 메커니즘 : 파일 시스템 미니 필터, 레지스트리 필터 알림, 프로세스 알림, 오브젝트 관리자 필터링, NDIS LWF, WFP 필터, ETW
+ 
+## 7-18 HyperGuard
+ 
+Windows 10 Anniversary Update(1607)에서 도입. VBS 활성화 시 VTL 1에서 VTL 0 커널을 감시하는 메커니즘
+ 
+PatchGuard와의 차이점 :
+ 
+| 특성 | PatchGuard | HyperGuard |
+|------|-----------|-----------|
+| 보안 경계 | 아님 (커널과 같은 레벨) | 진정한 보안 경계 (VTL 1이 VTL 0 감시) |
+| 난독화 | 필수 | 불필요 (심볼 공개, 코드 비난독화) |
+| 실행 방식 | 비결정적 | 결정적 |
+| 감지 타이밍 | 지연 가능 | 즉시 감지 |
+| 크래시 코드 | 다양 | 0x18C (HYPERGUARD_VIOLATION) |
+ 
+HyperGuard의 추가 기능 :
+ 
+- PatchGuard의 기능을 VTL 1에서 강화 보완
+- PatchGuard 자체를 공격자로부터 보호
+- NPIEP(Non-Privileged Instruction Execution Prevention) : SGDT/SIDT/SLDT 명령이 실제 커널 주소 대신 프로세서별 고유 가상 값 반환 → KASLR 우회 방지
+디버깅 모드 + 원격 하이퍼바이저 디버거 연결 시 비활성화
