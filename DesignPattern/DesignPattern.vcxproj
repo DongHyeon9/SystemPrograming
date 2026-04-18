@@ -127,11 +127,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Adapter.h" />
+    <ClInclude Include="Bridge.h" />
     <ClInclude Include="Composite.h" />
     <ClInclude Include="Decorator.h" />
+    <ClInclude Include="Facade.h" />
     <ClInclude Include="Headers.h" />
+    <ClInclude Include="Observer.h" />
+    <ClInclude Include="Proxy.h" />
     <ClInclude Include="Strategy.h" />
     <ClInclude Include="TemplateMethod.h" />
+    <ClInclude Include="Visitor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

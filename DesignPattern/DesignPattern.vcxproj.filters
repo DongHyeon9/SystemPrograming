@@ -10,5 +10,10 @@
     <ClInclude Include="Composite.h" />
     <ClInclude Include="Decorator.h" />
     <ClInclude Include="Adapter.h" />
+    <ClInclude Include="Proxy.h" />
+    <ClInclude Include="Facade.h" />
+    <ClInclude Include="Bridge.h" />
+    <ClInclude Include="Observer.h" />
+    <ClInclude Include="Visitor.h" />
   </ItemGroup>
 </Project>
