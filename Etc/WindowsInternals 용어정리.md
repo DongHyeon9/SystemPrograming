@@ -1086,3 +1086,302 @@ PEP 설명에서 처음 등장
 - CPU, GPU, 메모리 컨트롤러, I/O 인터페이스 등을 단일 칩에 통합한 설계
 - 모바일 기기, IoT 장치에 주로 사용
 - Windows 10 ARM 기반 디바이스(Surface Pro X 등)가 SoC 기반
+
+---
+ 
+# 7장 줄임말
+ 
+## CC - Common Criteria
+ 
+보안 등급 설명에서 처음 정의
+- "the Common Criteria (CC)"로 등장
+- 미국·유럽 등 다수 국가가 채택한 현행 국제 보안 평가 표준
+- EAL(Evaluation Assurance Level) 1~7 등급으로 평가
+- Windows는 CAPP 프로파일 하에 EAL 4+ 인증 획득
+## TCSEC - Trusted Computer System Evaluation Criteria
+ 
+CC 직후 보안 등급 섹션에서 처음 정의
+- "the Trusted Computer System Evaluation Criteria (TCSEC)"로 정의
+- 미국 국방부 오렌지북(Orange Book)으로 불림
+- D(최저) ~ A1(최고) 등급 체계. Windows NT 설계 목표는 C2 등급 달성
+- CC로 대체됐지만 Windows 보안 설계의 역사적 기반
+## CAPP - Controlled Access Protection Profile
+ 
+CC 인증 설명에서 처음 정의
+- "Common Criteria (CC) certification under the Controlled Access Protection Profile (CAPP)"로 정의
+- CC에서 정의한 보안 기능 프로파일 중 하나
+- C2 등급과 대략 동등한 접근 제어 보호 요구사항을 명시
+## EAL - Evaluation Assurance Level
+ 
+CAPP 설명 직후 처음 등장
+- "a rating of EAL 4+, the 'plus' denoting flaw remediation'"으로 등장
+- CC의 보증 등급 체계 (EAL 1~7)
+- EAL 4 : 국가 경계를 초월해 인정되는 가장 높은 등급
+- EAL 4+ : EAL 4에 결함 수정 보증이 추가된 등급
+## Lsass - Local Security Authority Subsystem Service
+ 
+보안 시스템 구성 요소 섹션에서 처음 정의
+- "Local Security Authority Subsystem Service (Lsass)"로 정의
+- Lsass.exe로 실행되는 유저 모드 프로세스
+- 로컬 보안 정책, 사용자 인증, 보안 감사 메시지 관리
+- Lsasrv.dll이 대부분의 기능 구현. SAM·Active Directory·Kerberos 패키지를 로드
+## KPP - Kernel Patch Protection
+ 
+VBS 섹션에서 처음 정의
+- "Kernel Patch Protection (KPP)"로 정의
+- PatchGuard라고도 불림
+- x64·ARM Windows에서 커널 코드·구조체 무단 수정을 감지해 BSOD로 대응
+- 공격을 막는 것이 아닌 감지·충돌로 대응하는 메커니즘 (CCTV 비유)
+## HVCI - HyperVisor Code Integrity
+ 
+VBS 구성 요소 목록에서 처음 정의
+- "Hypervisor-Based Code Integrity (HVCI)"로 정의
+- Device Guard의 핵심 기술
+- SLAT(하이퍼바이저 2차 주소 변환)를 통해 코드 서명 검증을 VTL 1에서 수행
+- 커널이 침해되더라도 서명되지 않은 코드 로드·실행 불가
+## KMCI - Kernel-Mode Code Integrity
+ 
+HVCI 직후 첫 정의
+- "Kernel-Mode Code Integrity (KMCI)"로 정의
+- 커널 모드 드라이버 서명을 강제하는 코드 무결성 서비스
+- HVCI가 KMCI를 VTL 1에서 강화
+## NTOWF - NT One-Way Function
+ 
+Credential Guard 섹션에서 처음 정의
+- "NT one-way function (NT OWF)"로 정의
+- 비밀번호의 MD4 해시. NTLM 프로토콜에서 사용자 인증에 활용
+- 현대 시스템에서는 Kerberos로 대체됐으나 레거시 컴포넌트가 여전히 사용
+- 인터셉트 시 즉시 사용 가능. MD4 취약성으로 비밀번호 복원도 가능
+## MD4 - Message Digest 4
+ 
+NTOWF 설명에서 처음 등장
+- "NTOWF is an MD4 hash"로 등장
+- Ron Rivest가 설계한 암호화 해시 알고리즘
+- Windows NTLM 인증에서 NTOWF(비밀번호 해시) 생성에 사용
+- 현재는 암호학적으로 취약해 보안 목적으로 부적합
+## RDP - Remote Desktop Protocol
+ 
+Credential Guard 섹션에서 처음 등장
+- "Terminal Services/RDP"로 등장
+- Microsoft의 원격 데스크톱 연결 프로토콜
+- WDigest와 함께 평문 인증을 사용하는 프로토콜 예시로 언급
+- Credential Guard가 이러한 프로토콜에 대한 SSO 기능을 비활성화
+## UMCI - User-Mode Code Integrity
+ 
+Device Guard 섹션에서 처음 정의
+- "User-Mode Code Integrity (UMCI)"로 정의
+- 사용자 모드 이미지(.exe, .dll)의 서명을 강제하는 코드 무결성 서비스
+- HVCI가 SLAT를 통해 서명되지 않은 사용자 모드 페이지 실행도 차단
+## CCI - Custom Code Integrity
+ 
+Device Guard 섹션에서 처음 정의
+- "Custom Code Integrity (CCI)"로 정의
+- 기업 관리자가 직접 정의하는 코드 서명 정책
+- Secure Boot로 보호되며 인증서 서명자나 SHA-2 해시 기반 포함·제외 목록 정의
+## SHA - Secure Hash Algorithm
+ 
+Device Guard 정책 설명에서 처음 등장
+- "certificate signers or SHA-2 hashes"로 등장
+- 미국 NIST가 표준화한 암호화 해시 알고리즘 계열
+- SHA-1(160비트, 현재 취약), SHA-2(SHA-256/384/512), SHA-3 포함
+- AppLocker·Device Guard·코드 서명 등 Windows 보안 전반에서 파일 무결성 확인에 활용
+## MBEC - Mode-Based Execution Control
+ 
+Device Guard 섹션에서 처음 정의
+- "Mode-Based Execution Control (MBEC)"로 정의
+- SLAT 페이지 테이블 엔트리에 유저 모드·커널 모드 별도 실행 비트를 추가하는 하드웨어 기능
+- MBEC가 없는 하드웨어에서는 Restricted User Mode(RUM)로 소프트웨어 에뮬레이션
+## RUM - Restricted User Mode
+ 
+MBEC 설명 직후 처음 정의
+- "Restricted User Mode (RUM)"로 정의
+- MBEC를 지원하지 않는 하이퍼바이저가 MBEC 기능을 소프트웨어로 에뮬레이션하는 방식
+- Device Guard의 유저/커널 실행 모드 분리를 MBEC 없이 구현
+## SKCI - Secure Kernel Code Integrity
+ 
+Device Guard 마지막 부분에서 처음 정의
+- "a library called SKCI.DLL, or Secure Kernel Code Integrity"로 정의
+- VTL 1(보안 커널)에 위치한 코드 무결성 라이브러리
+- Device Guard의 모든 코드 서명 강제를 VTL 1에서 최종 수행
+## DACL - Discretionary Access Control List
+ 
+오브젝트 보호 섹션에서 처음 정의
+- "object's discretionary access control list (DACL)"로 정의
+- 보안 서술자의 핵심 구성 요소. 오브젝트 접근 허용·거부 ACE 목록
+- NULL DACL = 모두 허용 (AppContainer에서는 예외적으로 거부 처리)
+- 빈(Empty) DACL = 모두 거부
+## UIPI - User Interface Privilege Isolation
+ 
+무결성 레벨 섹션에서 처음 정의
+- "User Interface Privilege Isolation (UIPI)"로 정의
+- 낮은 무결성 프로세스가 높은 무결성 프로세스의 윈도우에 메시지를 보내거나 훅을 설치하는 것을 차단
+- UAC와 함께 도입된 UI 격리 메커니즘. AppContainer에도 적용
+## RID - Relative Identifier
+ 
+SID 섹션에서 처음 정의
+- "32-bit subauthority or relative identifier (RID) values"로 정의
+- SID의 마지막 부분. 도메인·컴퓨터 내에서 계정을 고유하게 식별하는 값
+- Administrator = 500, Guest = 501, 일반 계정 = 1000부터 증가
+- 같은 도메인 SID + 다른 RID = 다른 계정
+## ACE - Access Control Entry
+ 
+SID 섹션에서 처음 정의
+- "access control entry (ACE)"로 정의
+- DACL 또는 SACL을 구성하는 개별 항목
+- 구성 : 유형(허용/거부/감사) + SID + 접근 마스크
+- 거부 ACE가 허용 ACE보다 항상 우선 적용
+## MMC - Microsoft Management Console
+ 
+서비스 관련 실험에서 처음 등장
+- "Services MMC snap-in (services.msc)"로 등장
+- Windows 관리 도구를 통합하는 호스트 애플리케이션 프레임워크
+- 스냅인(snap-in) 형태로 다양한 관리 도구 추가 가능 (보안 정책, 장치 관리자 등)
+- secpol.msc(로컬 보안 정책), services.msc, compmgmt.msc 등이 MMC 스냅인
+## SACL - System Access Control List
+ 
+보안 서술자 섹션에서 처음 정의
+- "System access control list (SACL)"로 정의
+- 보안 서술자의 구성 요소. 어떤 사용자의 어떤 작업을 보안 감사 로그에 기록할지 정의
+- SACL을 설정·조회하려면 SeSecurityPrivilege 필요
+- 전역 감사 정책(Global Audit Policy)으로 모든 파일/레지스트리에 일괄 적용 가능
+## SDDL - Security Descriptor Definition Language
+ 
+보안 서술자 섹션에서 처음 정의
+- "Security Descriptor Definition Language (SDDL)"로 정의
+- 보안 서술자를 컴팩트한 문자열로 표현하는 언어
+- AppLocker 규칙, 오브젝트 보안 설정 등에 사용
+- 예 : `D:(XD;;FX;;;SID;(APPID://FQBN >= {..."}))`
+## UAP - Universal Application Platform
+ 
+AppContainers 섹션에서 처음 정의
+- "Universal Application Platform (UAP) is sometimes used instead of UWP"로 정의
+- UWP(Universal Windows Platform)의 이전 명칭
+- Windows 8에서 처음 도입된 앱 플랫폼으로 다양한 Windows 10 폼팩터에서 실행
+## OID - Object Identifier
+ 
+AppContainer capability 섹션에서 처음 정의
+- "a mapping between an object identifier (OID)"로 정의
+- 인증서에서 특정 오브젝트 유형(예: EKU)을 고유하게 식별하는 숫자 문자열
+- AppContainer capability SID와 인증서 OID를 매핑하는 레지스트리 키에서 사용
+## CRT - C Runtime (Universal CRT)
+ 
+Device Guard 동적 코드 섹션에서 처음 등장
+- "the Universal CRT (uCRT) itself"로 등장
+- C언어 런타임 라이브러리. Windows 10부터 uCRT(Universal CRT)로 통합
+- Device Guard 컨텍스트에서 NGEN.EXE와 함께 동적 코드 생성이 허용되는 예시로 언급
+## DCOM - Distributed Component Object Model
+ 
+AppLocker AppID 설명에서 처음 등장
+- "not the same as the AppID used by DCOM/COM+ applications"로 등장
+- COM을 네트워크상의 원격 오브젝트 접근을 지원하도록 확장한 기술
+- AppLocker의 AppID(Application Identity)와 DCOM의 AppID는 다른 개념임을 명시하는 맥락
+## FQBN - Fully Qualified Binary Name
+ 
+AppLocker 규칙 기준 설명에서 처음 정의
+- "APPID://FQBN is a fully qualified binary name"으로 정의
+- 서명된 파일의 전체 이진 이름 : `{게시자\제품명\파일명, 버전}` 형식
+- AppLocker의 서명 인증서 기반 규칙에서 파일을 식별하는 핵심 속성
+## SRP - Software Restriction Policies
+ 
+AppLocker 섹션에서 처음 등장
+- "Windows XP introduced Software Restriction Policies (SRP)"로 정의
+- Windows XP에서 도입된 초기 코드 실행 제어 메커니즘
+- AppLocker로 대체됐지만 공존 (같은 GPO에서는 AppLocker 규칙 우선)
+- 단점 : 사용자·그룹별 적용 불가, 감사 모드 없음
+## GPO - Group Policy Object
+ 
+AppLocker 섹션에서 처음 정의
+- "the same Group Policy object (GPO)"로 정의
+- Active Directory 도메인에서 컴퓨터·사용자 설정을 관리하는 정책 컨테이너
+- AppLocker 규칙을 도메인 전체에 배포할 때 활용
+- secpol.msc(로컬)나 gpmc.msc(도메인)로 편집
+## OCX - OLE Control Extension
+ 
+AppLocker 제어 파일 목록에서 처음 등장
+- "Dynamic-link libraries (DLL and OCX)"로 등장
+- ActiveX 컨트롤의 파일 확장자. COM 기반 재사용 가능 UI 컴포넌트
+- AppLocker가 DLL과 함께 제어 대상으로 지정
+## MSI - Microsoft Software Installer (Windows Installer Package)
+ 
+AppLocker 제어 파일 목록에서 처음 정의
+- "Microsoft Software Installer (MSI and MSP)"로 등장
+- Windows 설치 패키지 파일 형식. 설치·제거·업데이트 기능 포함
+- AppLocker가 설치 및 제거 동작 모두 제어 가능
+## PS1 - PowerShell Script
+ 
+AppLocker 스크립트 목록에서 처음 등장
+- "Windows PowerShell (PS1)"로 등장
+- PowerShell 스크립트 파일 확장자
+- AppLocker가 BAT, CMD, VBS, JS와 함께 스크립트 실행 제어 대상으로 포함
+## BAT - Batch Script
+ 
+AppLocker 스크립트 목록에서 처음 등장
+- "Batch (BAT and CMD)"로 등장
+- Windows 배치 스크립트 파일 확장자
+- AppLocker의 스크립트 제어 대상
+## CMD - Command Script
+ 
+BAT와 함께 처음 등장
+- "Batch (BAT and CMD)"로 등장
+- Windows 명령 스크립트 파일 확장자 (.cmd)
+- BAT와 동일한 배치 스크립트이나 구분하여 관리
+## CCTV - Closed-Circuit Television
+ 
+PatchGuard 비유 설명에서 처음 등장
+- "Internet-connected video security system, or CCTV"로 등장
+- PatchGuard의 역할을 비유하는 데 사용 : 공격을 막는 잠금장치가 아닌 감지·경보 시스템
+- KPP는 CCTV처럼 사후 감지 후 알람(BSOD)을 울릴 뿐 공격 자체를 차단하지 않음
+## SSDT - System Service Descriptor Table
+ 
+PatchGuard 보호 대상 표에서 처음 정의
+- "System Service Descriptor Table (SSDT)"로 정의
+- 각 시스템 콜 핸들러를 가리키는 함수 포인터 배열 테이블
+- 루트킷이 가장 많이 노리는 커널 구조체 중 하나
+- PatchGuard가 무단 수정 감지·BSOD로 보호
+## LWF - Lightweight Filter
+ 
+PatchGuard 지원 대체 메커니즘 섹션에서 처음 정의
+- "NDIS Lightweight Filters (LWF)"로 정의
+- 네트워크 드라이버 인터페이스(NDIS) 스택에 삽입되는 필터
+- 소켓 연산 감시, 원시 이더넷 프레임 데이터 접근 가능
+- PatchGuard 대신 활용 가능한 지원 커널 확장 메커니즘 중 하나
+## WFP - Windows Filtering Platform
+ 
+LWF와 함께 처음 정의
+- "Windows Filtering Platform (WFP) filters"로 정의
+- 네트워크 패킷 필터링을 위한 Windows 표준 플랫폼
+- accept, listen, connect, close 등 소켓 연산과 패킷 자체 감시 가능
+- 방화벽·IDS 등 보안 소프트웨어가 활용
+## NIC - Network Interface Card
+ 
+WFP 설명에서 처음 등장
+- "data that is going from the network card (NIC) to the wire"로 등장
+- 네트워크 인터페이스 카드. 컴퓨터를 네트워크에 연결하는 하드웨어
+- LWF를 통해 NIC에서 전선으로 나가는 원시 이더넷 프레임 데이터에 접근 가능
+## NPIEP - Non-Privileged Instruction Execution Prevention
+ 
+HyperGuard 섹션에서 처음 정의
+- "Non-Privileged Instruction Execution Prevention (NPIEP)"로 정의
+- VBS 활성화 시 하이퍼바이저가 구현하는 완화 기법
+- SGDT/SIDT/SLDT 명령 실행은 허용하되 실제 커널 주소 대신 프로세서별 고유 가상 값 반환
+- KASLR(커널 ASLR) 정보 유출 공격 방어
+## LDT - Local Descriptor Table
+ 
+NPIEP 섹션에서 처음 등장
+- "kernel-mode addresses of the GDT, IDT, and LDT"로 등장
+- CPU의 세그먼트 서술자 테이블 중 하나 (GDT와 별도로 프로세스별 세그먼트 정의)
+- SLDT 명령으로 주소를 읽을 수 있어 KASLR 우회에 악용 가능 → NPIEP로 보호
+## SGDT / SIDT / SLDT - Store GDT/IDT/LDT Register
+ 
+NPIEP 섹션에서 처음 등장
+- "which are SGDT, SIDT, and SLDT"로 등장
+- x64 명령어로 각각 GDT, IDT, LDT의 커널 주소를 읽는 명령
+- 정보 유출(KASLR 우회)에 악용 가능
+- NPIEP 적용 시 실제 주소 대신 프로세서별 고유 가상 값 반환
+## KASLR - Kernel Address Space Layout Randomization
+ 
+HyperGuard 마지막 부분에서 처음 정의
+- "Kernel ASLR (KASLR)"로 정의
+- 부팅 시 커널 이미지·드라이버·커널 구조체의 메모리 주소를 무작위화
+- 커널 주소를 알아야 실행 가능한 공격을 어렵게 만드는 완화 기법
+- NPIEP는 KASLR 우회 가능한 정보 유출 명령으로부터 보호
