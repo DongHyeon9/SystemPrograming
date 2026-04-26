@@ -126,14 +126,21 @@
     <ClCompile Include="DesignPattern.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractFactory.h" />
     <ClInclude Include="Adapter.h" />
     <ClInclude Include="Bridge.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="Composite.h" />
     <ClInclude Include="Decorator.h" />
     <ClInclude Include="Facade.h" />
+    <ClInclude Include="Factory.h" />
+    <ClInclude Include="Flyweight.h" />
     <ClInclude Include="Headers.h" />
+    <ClInclude Include="Memento.h" />
     <ClInclude Include="Observer.h" />
+    <ClInclude Include="Prototype.h" />
     <ClInclude Include="Proxy.h" />
+    <ClInclude Include="State.h" />
     <ClInclude Include="Strategy.h" />
     <ClInclude Include="TemplateMethod.h" />
     <ClInclude Include="Visitor.h" />

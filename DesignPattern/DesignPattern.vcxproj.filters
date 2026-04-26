@@ -15,5 +15,12 @@
     <ClInclude Include="Bridge.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="Visitor.h" />
+    <ClInclude Include="Factory.h" />
+    <ClInclude Include="Prototype.h" />
+    <ClInclude Include="AbstractFactory.h" />
+    <ClInclude Include="Flyweight.h" />
+    <ClInclude Include="Memento.h" />
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="State.h" />
   </ItemGroup>
 </Project>
