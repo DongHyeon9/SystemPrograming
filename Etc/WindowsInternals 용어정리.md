@@ -1327,3 +1327,162 @@
 - UWP/Centennial 패키지 앱의 활성화·비활성화 생명주기를 관리하는 컴포넌트
 - PLM의 요청을 받아 실제 앱 프로세스 생성·활성화를 수행
 - 백그라운드 작업(Background Broker Infrastructure)과 연동해 트리거 기반 실행 조율
+
+# 9장 줄임말
+ 
+## VP - Virtual Processor
+ 
+- 하이퍼바이저가 파티션에 제공하는 가상 프로세서
+- 루트 파티션의 Windows 스레드(백킹 스레드)로 구현됨
+- VM_VP 데이터 구조가 레지스터 상태, 전용 주소 공간, VTL별 상태를 추적
+- VP는 가상 APIC와 타이머를 독립적으로 보유
+## GPA - Guest Physical Address
+ 
+- 게스트 OS(파티션)가 "물리 주소"라고 인식하는 가상 주소
+- SLAT(EPT/NPT/Stage-2)를 통해 실제 물리 주소(SPA)로 변환
+- 루트 파티션은 Identity Mapping(GPA = SPA), 차일드는 GPA ≠ SPA
+## SPA - System Physical Address
+ 
+- 실제 물리 메모리의 주소
+- SLAT 변환의 최종 목적지
+- 하이퍼바이저가 GPA → SPA 매핑 테이블(EPT/NPT)을 관리
+## EPT - Extended Page Tables
+ 
+- Intel CPU의 SLAT 구현 명칭
+- 게스트 물리 주소(GPA)를 시스템 물리 주소(SPA)로 변환하는 4단계 페이지 테이블
+- VTL 0과 VTL 1에 각각 독립된 EPT 테이블이 존재
+- MBEC 지원 시 유저/커널 모드 실행 비트가 EPT 항목에 추가됨
+## NPT - Nested Page Tables
+ 
+- AMD CPU의 SLAT 구현 명칭
+- Intel EPT와 동일한 목적을 수행하는 AMD 전용 2단계 주소 변환
+## VMMS - Virtual Machine Management Service
+ 
+- vmms.exe. 가상 머신 관리 서비스
+- VM 생성·시작·중지·마이그레이션 등 생명주기 전반을 조율
+- WMI Provider를 통해 Hyper-V 관리 API를 외부에 노출
+## VMWP - Virtual Machine Worker Process
+ 
+- vmwp.exe. VM당 하나씩 생성되는 가상 머신 워커 프로세스
+- VM 상태 관리, 장치 에뮬레이션, 하이퍼바이저와의 통신 담당
+- VM Worker Process 내부에 Vmdynmem.dll 등 여러 모듈 포함
+## VID - Virtual Infrastructure Driver
+ 
+- VID.sys. 하이퍼바이저와 직접 통신하는 커널 모드 드라이버
+- 파티션·VP 생성, 메모리 입출금(HvDepositMemory/HvWithdrawMemory), 인터셉트 처리
+- 파티션 생성 시 권한(Privilege) 설정도 VID가 담당
+## VSP - Virtualization Service Provider
+ 
+- 루트 파티션 측에서 가상 디바이스를 제공하는 컴포넌트
+- 네트워크 VSP(NetVSP), 스토리지 VSP(StorVSP) 등
+- VMBus를 통해 차일드 파티션의 VSC와 통신
+## VSC - Virtualization Service Client
+ 
+- 차일드 파티션 측의 가상 디바이스 클라이언트 드라이버
+- 실제 하드웨어 드라이버처럼 동작하지만, 내부적으로 VMBus로 루트의 VSP에 I/O 전달
+## VMBus - Virtual Machine Bus
+ 
+- 루트 파티션의 VSP와 차일드 파티션의 VSC를 연결하는 고성능 가상 버스
+- 대부분의 I/O(네트워크, 스토리지, 그래픽 등)가 VMBus를 통해 처리
+- 하이퍼콜 기반 공유 메모리 채널 방식으로 낮은 오버헤드 제공
+## BSP - Bootstrap Processor
+ 
+- 시스템 부팅 시 가장 먼저 실행되는 프로세서
+- 하이퍼바이저 초기화 후 루트 파티션의 첫 번째 VP(BSP VP)를 생성해 부팅 과정을 재개
+- AP(Application Processor)와 구분됨
+## AP - Application Processor
+ 
+- BSP를 제외한 나머지 물리 CPU
+- BSP VP가 생성·초기화된 이후 순차적으로 시작됨
+- 하이퍼바이저가 각 AP에 대해 별도의 CPU_PLS와 VP를 초기화
+## CPU_PLS - Physical Processor Local Storage
+ 
+- 하이퍼바이저에서 물리 프로세서를 나타내는 데이터 구조
+- NT 커널의 KPRCB에 대응하는 하이퍼바이저 내부 구조체
+- GS 세그먼트로 빠르게 접근 (NT 커널이 KPCR을 GS로 접근하는 것과 동일한 방식)
+## VAL - Virtualization Abstraction Layer
+ 
+- 하이퍼바이저가 Intel/AMD/ARM64의 하드웨어 가상화 확장 차이를 추상화하는 계층
+- Intel 전용 코드(EPT, SGX, MBEC 관리 등)와 AMD, ARM64 전용 코드를 분리해 관리
+## SynIC - Synthetic Interrupt Controller
+ 
+- 하이퍼바이저가 제공하는 가상 인터럽트 컨트롤러
+- 물리 APIC를 에뮬레이션하는 대신 하이퍼콜 기반으로 효율적으로 인터럽트 전달
+- 파티션 간 메시지 전달과 이벤트 신호에도 활용됨
+## VPID - Virtual Processor Identifier
+ 
+- TLB 엔트리에 VP 식별자를 태깅해 VM 전환 시 전체 TLB 플러시를 피하는 하드웨어 기능
+- Intel VT-x의 기능. AMD에서는 ASID(Address Space Identifier)로 대응
+- 중첩 가상화 환경에서 L1↔L0 전환 성능 저하를 완화
+## HvLoader - Hypervisor Loader
+ 
+- hvloader.dll. 하이퍼바이저 바이너리를 로드하고 하이퍼바이저 로더 블록을 생성하는 모듈
+- CPU 제조사에 맞는 하이퍼바이저 이미지를 선택해 로드
+- 하이퍼바이저가 시작하기 전에 물리 페이지를 사전 할당하고 예약
+## VMENTER / VMEXIT
+ 
+- VMENTER : CPU가 게스트 VM의 컨텍스트로 전환하는 하드웨어 이벤트
+- VMEXIT : 하이퍼바이저 개입이 필요한 이벤트(인터럽트, 하이퍼콜, 특정 명령 실행 등)로 인해 게스트에서 하이퍼바이저로 제어가 넘어가는 이벤트
+- VMEXIT 처리 비용이 가상화 오버헤드의 핵심
+## VMXROOT
+ 
+- Intel VT-x 용어. 하이퍼바이저 자체가 실행되는 최상위 특권 모드
+- VMXROOT에서는 일반적인 ring 0/3 개념이 적용되지 않음
+- 하이퍼바이저가 실행 중일 때의 CPU 실행 컨텍스트
+## Hypercall
+ 
+- 게스트 파티션(또는 루트 파티션)이 하이퍼바이저 서비스를 요청하는 인터페이스
+- x64에서 VMCALL 명령으로 발행
+- 하이퍼콜 번호(function code) + 입력 파라미터(레지스터 또는 메모리)로 구성
+## GPC - Guest Physical to Child Partition
+ 
+GPA와 함께 사용되는 용어. 차일드 파티션에서 게스트 물리 주소 공간이 하이퍼바이저에 의해 격리됨을 나타냄
+ 
+## HyperClear
+ 
+- Intel/AMD 사이드채널 취약점(Spectre, Meltdown, Foreshadow)에 대응하는 Hyper-V의 VM 간 격리 완화 기법
+- 세 가지 구성 요소 : 코어 스케줄러 + VP 전용 주소 공간 격리 + 민감 데이터 스크러빙
+- 코어 스케줄러가 같은 VM의 VP만 동일 SMT 코어에서 실행하도록 보장
+## SR-IOV - Single Root I/O Virtualization
+ 
+- PCIe 장치의 하드웨어 가상화 기능
+- 하나의 물리 장치에서 여러 개의 가상 기능(VF)을 생성
+- VF를 차일드 파티션에 직접 할당하면 VMBus 경로를 우회해 베어메탈에 가까운 I/O 성능 달성
+## L0 / L1 하이퍼바이저
+ 
+- L0 : 실제 물리 하드웨어를 관리하는 루트(외부) 하이퍼바이저
+- L1 : L0의 VM 안에서 실행되는 게스트(내부) 하이퍼바이저
+- 중첩 가상화(Nested Virtualization) 환경에서의 용어
+## VDEV - Virtual Device
+ 
+- 가상화 스택이 차일드 파티션에 노출하는 가상 하드웨어 장치
+- 네트워크 어댑터, 디스크 컨트롤러, 그래픽 카드 등을 소프트웨어로 에뮬레이션
+## VMMEM
+ 
+- vmmem.exe. VM의 메모리 사용량을 작업 관리자에 표시하기 위한 프로세스
+- 실제로 VM에 할당된 물리 메모리를 추적하는 시스템 프로세스
+## KPTI - Kernel Page Table Isolation
+ 
+- KVA Shadow와 동일한 개념의 Linux 커뮤니티 용어
+- Meltdown 완화를 위해 유저 모드 실행 시 커널 페이지 테이블을 최소화하는 기법
+- Windows에서는 KVA Shadow라고 부름
+## MDS - Microarchitectural Data Sampling
+ 
+- CPU 내부 버퍼(라인 채우기 버퍼, 로드 포트, 저장소 포워딩 버퍼)에서 데이터를 추론 읽기하는 사이드채널 취약점 계열
+- RIDL, Fallout, ZombieLoad 등이 포함됨
+- 완화 : MD_CLEAR 기능(VERW 명령으로 버퍼 플러시)
+## L1TF - L1 Terminal Fault (Foreshadow)
+ 
+- L1 캐시에 남아있는 데이터를 투기 실행으로 읽는 사이드채널 공격
+- SGX 엔클레이브 내부 데이터, 하이퍼바이저 메모리, 커널 메모리를 게스트에서 읽을 수 있는 취약점
+- 완화 : L1D 캐시 플러시(VM 전환 시), 코어 스케줄러 적용
+## SKINIT - Secure Kernel INITialization
+ 
+- AMD CPU의 Secure Launch 기능
+- TPM과 협력해 신뢰할 수 있는 실행 환경을 처음부터 부트스트랩
+- Intel TXT(Trusted Execution Technology)의 AMD 대응 기술
+## TXT - Trusted Execution Technology
+ 
+- Intel의 하드웨어 기반 신뢰 실행 기술
+- DRTM(Dynamic Root of Trust Measurement)을 제공
+- Secure Launch(측정 부팅의 고급 형태)에 활용됨
