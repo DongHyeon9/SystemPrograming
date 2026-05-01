@@ -14,6 +14,6 @@
 <img width="1093" height="299" alt="image" src="https://github.com/user-attachments/assets/950034fa-5639-4760-b6c1-3884a7102642" />
 vcpkg 다운 시 protobuf임 (google 안들어감ㅋㅋ;;)
 
-프로토버프 C++ API : https://github.com/protocolbuffers/protobuf/tree/main/src
+프로토버프 C++ API (CMake로 빌드가능) : https://github.com/protocolbuffers/protobuf/tree/main/src
 
 프로토버프 API 문서 : https://protobuf.dev/reference/cpp/api-docs/
