@@ -112,7 +112,7 @@
     <ClInclude Include="Server_Asio_SyncUDP.h">
       <Filter>SocketModel\10.Asio\2.SyncUDP</Filter>
     </ClInclude>
-    <ClInclude Include="GoogleProtocalBuffer\Protocol\Protocol.pb.h">
+    <ClInclude Include="GoogleProtocolBuffer\Protocol\Protocol.pb.h">
       <Filter>Protocol</Filter>
     </ClInclude>
   </ItemGroup>
@@ -210,7 +210,7 @@
     <ClCompile Include="Server_Asio_SyncUDP.cpp">
       <Filter>SocketModel\10.Asio\2.SyncUDP</Filter>
     </ClCompile>
-    <ClCompile Include="GoogleProtocalBuffer\Protocol\Protocol.pb.cc">
+    <ClCompile Include="GoogleProtocolBuffer\Protocol\Protocol.pb.cc">
       <Filter>Protocol</Filter>
     </ClCompile>
   </ItemGroup>
