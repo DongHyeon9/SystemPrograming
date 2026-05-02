@@ -17,3 +17,5 @@ vcpkg 다운 시 protobuf임 (google 안들어감ㅋㅋ;;)
 프로토버프 C++ API (CMake로 빌드가능) : https://github.com/protocolbuffers/protobuf/tree/main/src
 
 프로토버프 API 문서 : https://protobuf.dev/reference/cpp/api-docs/
+
+프로토버프 API와 Protoc버전이 맞아야 컴파일이 가능
