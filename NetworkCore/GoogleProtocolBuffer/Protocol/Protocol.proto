@@ -1,0 +1,19 @@
+// 프로토콜 버전 명시
+syntax = "proto3";
+
+package Protocol;
+
+message BuffData
+{
+	uint64 aid = 1; // 필드 번호는 1부터 시작
+	float hp = 2;
+}
+
+// 프로토콜에서 사용할 메시지(구조체개념)
+// 숫자는 위치의 개념(순서)
+message TEST
+{
+	int32 oid = 1; // 필드 번호는 1부터 시작
+	string name = 2;
+	repeated BuffData info = 3; // 반복 필드 (배열)
+}

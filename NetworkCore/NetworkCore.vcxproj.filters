@@ -112,6 +112,9 @@
     <ClInclude Include="Server_Asio_SyncUDP.h">
       <Filter>SocketModel\10.Asio\2.SyncUDP</Filter>
     </ClInclude>
+    <ClInclude Include="GoogleProtocalBuffer\Protocol\Protocol.pb.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreMinimal.cpp">
@@ -207,6 +210,9 @@
     <ClCompile Include="Server_Asio_SyncUDP.cpp">
       <Filter>SocketModel\10.Asio\2.SyncUDP</Filter>
     </ClCompile>
+    <ClCompile Include="GoogleProtocalBuffer\Protocol\Protocol.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -262,6 +268,9 @@
     </Filter>
     <Filter Include="SocketModel\10.Asio\4.AsyncUDP">
       <UniqueIdentifier>{7a640fa4-074b-47ea-9d45-504c249b6896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{9898a09e-3527-4e2f-87ac-fa8b8161ea14}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
