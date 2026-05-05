@@ -1486,3 +1486,346 @@ GPA와 함께 사용되는 용어. 차일드 파티션에서 게스트 물리 �
 - Intel의 하드웨어 기반 신뢰 실행 기술
 - DRTM(Dynamic Root of Trust Measurement)을 제공
 - Secure Launch(측정 부팅의 고급 형태)에 활용됨
+
+---
+
+# 10장 줄임말
+
+## TxR - Transactional Registry
+
+- KTM + CLFS 기반 레지스트리 트랜잭션 기능
+- `RegCreateKeyTransacted` / `RegOpenKeyTransacted`로 커밋·롤백 가능
+- NTFS TxF와 같은 KTM 트랜잭션으로 묶어 원자적 파일+레지스트리 변경 가능
+
+## KTM - Kernel Transaction Manager
+
+- 커널 내장 분산 트랜잭션 조율 컴포넌트
+- TxR(트랜잭션 레지스트리)과 TxF(트랜잭션 파일 시스템) 모두 KTM 위에 구현
+- 2단계 커밋(Two-Phase Commit) 프로토콜 지원
+
+## CLFS - Common Log File System
+
+- Windows Vista~. 고성능 순차 로그 파일 시스템
+- TxR, TxF, 클러스터 서비스 등의 로깅 백엔드
+- 로그 스트림 단위로 관리. 체크포인트·복구 지원
+
+## SDB - Shim Database
+
+- 앱 호환성 쉼(Shim) 정보를 저장하는 데이터베이스 파일
+- `%SystemRoot%\AppPatch\sysmain.sdb`가 기본 시스템 데이터베이스
+- 앱 시그니처(이름, 버전, 체크섬)와 적용할 쉼 매핑 정보 포함
+
+## SCP - Service Control Program
+
+- SCM과 통신해 서비스를 제어하는 프로그램
+- services.msc, sc.exe, net start/stop 등이 SCP의 예시
+- `OpenSCManager`, `OpenService`, `ControlService` API로 구현
+
+## UBPM - Unified Background Process Manager
+
+- Windows 8~. 시스템 전체 백그라운드 작업을 통합 조율하는 인프라
+- Task Scheduler, Modern Standby 백그라운드 트리거, UWP 백그라운드 작업을 단일 프레임워크로 통합
+- 배터리·네트워크 상태에 따라 백그라운드 작업 실행을 조절
+
+## SEB - System Events Broker
+
+- 시스템 이벤트를 UBPM에 전달하는 이벤트 브로커
+- ETW 이벤트, WNF 상태 변경, 네트워크 연결 상태 등 다양한 소스 수집
+- UWP 앱 백그라운드 트리거 실행 조율에 핵심 역할
+
+## BI - Background Broker Infrastructure
+
+- UWP 앱의 백그라운드 작업 트리거 등록·실행을 처리하는 인프라
+- UBPM과 협력해 배터리·CPU·네트워크 자원을 고려한 백그라운드 작업 스케줄링
+- 앱이 PLM에 의해 일시 중단된 상태에서도 특정 트리거에 반응해 짧게 실행 가능
+
+## CIM - Common Information Model
+
+- DMTF가 정의한 객체지향 시스템 관리 정보 모델
+- 시스템·네트워크·앱 자원을 계층적 클래스 구조로 표현
+- WMI는 Windows에서 CIM을 구현한 서비스
+
+## MOF - Managed Object Format
+
+- WMI 클래스와 인스턴스를 기술하는 언어
+- `.mof` 파일로 작성 후 `mofcomp.exe`로 WMI 리포지터리에 등록
+- Win32_Process, Win32_Service 등 내장 WMI 클래스가 MOF로 정의됨
+
+## WQL - WMI Query Language
+
+- WMI 클래스 인스턴스를 쿼리하는 SQL 유사 언어
+- `SELECT * FROM Win32_Process WHERE Name = 'notepad.exe'` 형식
+- WHERE 절 필터링, ASSOCIATORS OF로 관계 탐색 가능
+
+## DMTF - Distributed Management Task Force
+
+- CIM 표준을 관리하는 업계 컨소시엄
+- WMI의 CIM 구현 기반 표준을 정의하는 단체
+
+## ETL - Event Trace Log
+
+- ETW 이벤트를 기록한 바이너리 로그 파일 확장자
+- `tracerpt.exe`, WPA, PerfView 등으로 분석
+- xperf, Windows Performance Recorder(WPR)로 수집
+
+## WPP - Windows Software Trace PreProcessor
+
+- ETW 기반 경량 디버그 추적 프레임워크
+- `DoTraceMessage` 매크로를 소스에 삽입하면 컴파일 시 ETW 이벤트 코드 자동 생성
+- 비활성화 시 오버헤드 거의 없음
+
+## WPA - Windows Performance Analyzer
+
+- ETL 파일을 시각화하는 GUI 분석 도구
+- CPU 사용률, 메모리, I/O, 네트워크, 부팅 타임라인 등을 타임라인 뷰로 표시
+- Windows ADK에 포함
+
+## ADK - Windows Assessment and Deployment Kit
+
+- Windows 이미지 커스터마이징·배포·성능 평가 도구 모음
+- WPA, WPR, WPRUI, ACT 포함
+- 기업 환경 Windows 배포 자동화에 활용
+
+## AeDebug
+
+- 처리되지 않은 예외 발생 시 실행할 디버거를 지정하는 레지스트리 키
+- `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug`
+- Debugger 값에 디버거 경로, Auto 값으로 자동 실행 여부 결정
+
+## WPR - Windows Performance Recorder
+
+- WPA와 함께 사용하는 ETW 추적 수집 도구
+- 프리셋(CPU, 힙, I/O 등)으로 추적 세션 시작·중지
+- .wprp 프로파일 XML로 커스텀 추적 구성 가능
+
+## gMSA - Group Managed Service Account
+
+- 도메인 환경에서 여러 서버가 공유하는 관리 서비스 계정
+- Active Directory가 비밀번호 자동 갱신
+- 단일 서버용 MSA의 그룹 확장 버전
+
+## MSA - Managed Service Account
+
+- 도메인 연동으로 비밀번호를 자동 관리하는 서비스 계정
+- 단일 서버에서만 사용 가능
+- `New-ADServiceAccount` PowerShell 명령으로 생성
+
+## BCD - Boot Configuration Data
+
+- Windows 부트 로더 옵션 설정 데이터베이스
+- `HKLM\BCD00000000` 레지스트리 하이브로 마운트됨
+- `bcdedit.exe`로 관리
+
+## DPC Watchdog
+
+- DISPATCH_LEVEL에서 코드가 기준 시간 이상 실행 시 DPC_WATCHDOG_VIOLATION BSOD 발생
+- 드라이버가 DISPATCH_LEVEL에서 너무 오래 블로킹하는 버그 탐지
+
+---
+
+# 11장 줄임말
+
+## VACB - Virtual Address Control Block
+
+- 캐시 관리자의 캐시 슬롯 단위 (256KB)
+- 파일 오프셋(VBO)과 가상 주소 매핑을 추적하는 데이터 구조
+- 시스템 전체 VACB 배열이 캐시 가상 공간 전체를 관리
+
+## VBO - Virtual Byte Offset
+
+- 파일 내의 바이트 위치 (파일 오프셋)
+- 캐시 관리자가 VBO 기준으로 VACB를 선택·관리
+- 섹션 오브젝트의 매핑 단위
+
+## LBO - Logical Block Address (LBA) / Logical Byte Offset
+
+- 디스크 볼륨 내 실제 디스크 블록 주소
+- 파일 시스템이 VBO → LBO 변환을 담당
+
+## FSD - File System Driver
+
+- 파일 시스템 드라이버의 약칭
+- Ntfs.sys, Fat.sys 등 로컬 FSD와 Mup.sys·Rdbss.sys 등 원격 FSD로 구분
+- I/O 관리자로부터 IRP를 받아 처리
+
+## USN - Update Sequence Number
+
+- NTFS 변경 저널 파일($UsnJrnl)의 레코드 식별 번호
+- 파일·디렉터리 생성·수정·삭제·이름 변경 등의 변경 사항을 순서대로 기록
+- 백업 소프트웨어, 검색 엔진, 안티멀웨어가 변경 감지에 활용
+
+## LCN - Logical Cluster Number
+
+- NTFS 볼륨 내 클러스터의 논리 번호 (볼륨 시작부터 순서대로)
+- 파일의 비거주 속성(Non-Resident)이 LCN으로 디스크 위치를 기록
+
+## VCN - Virtual Cluster Number
+
+- 파일 내 클러스터의 논리 번호 (파일 시작부터 순서대로)
+- Run List: VCN → LCN 매핑으로 파일의 디스크 위치 추적
+
+## MFT - Master File Table
+
+- NTFS 볼륨의 모든 파일·디렉터리 레코드를 저장하는 핵심 메타데이터 파일($MFT)
+- 볼륨 크기에 따라 사전 예약 (기본 12.5%)
+- 첫 16개 레코드는 시스템 메타데이터 파일 전용
+
+## LFS - Log File Service
+
+- NTFS의 로깅 서비스. 메타데이터 변경을 $LogFile에 사전 기록
+- 커밋·언커밋 트랜잭션을 관리해 크래시 후 복구 지원
+- 쓰기 전 로깅(Write-Ahead Logging, WAL) 구현
+
+## EFS - Encrypting File System
+
+- NTFS 기반 파일 단위 투명 암호화 기능
+- FEK(File Encryption Key)를 사용자 인증서 공개 키로 암호화해 $EFS 속성에 저장
+- BitLocker(볼륨 암호화)와 독립적으로 사용 가능
+
+## FEK - File Encryption Key
+
+- EFS가 파일 데이터를 암호화하는 데 사용하는 대칭 키 (AES 256비트)
+- 파일별로 고유하게 생성
+- 사용자 인증서 공개 키로 암호화되어 $EFS 스트림에 저장
+
+## DAX - Direct Access (Disks)
+
+- NVM(Non-Volatile Memory) 장치를 파일 시스템 캐시를 우회하고 직접 접근하는 기능
+- NTFS DAX 모드: 캐시 관리자 바이패스, 물리 주소로 직접 파일 매핑
+- `FILE_FLAG_DAX_VOLUME`으로 DAX 볼륨에 열린 파일임을 표시
+
+## PM - Persistent Memory (NVM)
+
+- 전원이 꺼져도 데이터를 유지하는 바이트 주소 지정 가능 스토리지
+- Intel Optane DC Persistent Memory가 대표 예시
+- DAX 모드로 파일 시스템 캐시 없이 직접 접근 가능
+
+## SCM Storage - Storage Class Memory
+
+- PM/NVM 장치를 위한 Windows 스토리지 드라이버 모델
+- DAX 드라이버 모델의 기반
+- `scmbus.sys`, `scmdisk0901.sys` 등이 SCM 드라이버
+
+## VDL - Valid Data Length
+
+- 파일에서 실제 유효 데이터가 기록된 마지막 바이트 위치
+- VDL 이후~EOF 사이는 읽기 시 0으로 채워짐 (초기화 안 된 영역)
+- ReFS Sparse VDL: VDL을 빠르게 확장해 초기화 없이 스파스 영역 생성
+
+## SMR - Shingled Magnetic Recording
+
+- 트랙을 겹쳐(shingled) 기록 밀도를 높이는 HDD 기술
+- 임의 쓰기 불가, 순차 쓰기만 가능
+- ReFS가 SMR 디스크에 맞는 순차 쓰기 최적화 I/O 패턴 제공
+
+## oplock - Opportunistic Lock
+
+- 원격 파일 시스템 클라이언트가 파일을 로컬에 캐시할 수 있도록 허용하는 잠금
+- 서버가 충돌 접근 감지 시 클라이언트에 파괴(break) 알림 전송
+- 파괴 시 클라이언트는 캐시를 플러시하고 서버에 최신 데이터 기록
+
+## LRC - Local Reconstruction Codes
+
+- Storage Spaces의 패리티 방식 중 하나
+- RAID 6보다 효율적인 오류 정정 코드
+- 드라이브 2개 장애를 복구할 수 있으면서 패리티 오버헤드를 줄임
+
+---
+
+# 12장 줄임말
+
+## PK - Platform Key
+
+- Secure Boot 계층 구조의 최상위 키
+- UEFI 펌웨어 제조사가 소유·관리
+- KEK(Key Exchange Key) 업데이트를 허가
+
+## KEK - Key Exchange Key
+
+- Secure Boot에서 허용(db)·거부(dbx) 서명 DB를 업데이트할 수 있는 키
+- PK로 서명된 KEK만 DB를 수정 가능
+- Microsoft의 KEK가 Windows 부트로더 서명 관리에 사용됨
+
+## PCR - Platform Configuration Register
+
+- TPM 내부의 측정값 저장 레지스터
+- 측정값은 누적 해시(extend 연산)로 업데이트됨 → 이전 값 변경 불가
+- BitLocker가 PCR 값에 암호화 키를 봉인(seal)
+
+## DRTM - Dynamic Root of Trust Measurement
+
+- 시스템이 실행 중에 새로운 신뢰 루트를 동적으로 확립하는 기술
+- Intel TXT 또는 AMD SKINIT로 구현
+- Secure Launch가 DRTM을 활용해 부팅 후에도 안전한 hypervisor 시작 가능
+
+## MBR - Master Boot Record
+
+- BIOS 부팅에서 디스크 첫 번째 섹터에 위치하는 부트 코드 및 파티션 테이블
+- 최대 4개의 기본 파티션, 2TB 디스크 크기 한도
+- UEFI + GPT로 대체됨
+
+## GPT - GUID Partition Table
+
+- UEFI 기반 현대 파티션 테이블 형식
+- 128개 파티션, 9.4ZB 디스크 크기 지원
+- CRC32 체크섬으로 파티션 테이블 무결성 검증
+
+## VBR - Volume Boot Record
+
+- NTFS/FAT 볼륨의 첫 번째 섹터
+- BPB(BIOS Parameter Block)를 포함해 파일 시스템 파라미터 저장
+- OS 로더가 볼륨 레이아웃 파악에 사용
+
+## BPB - BIOS Parameter Block
+
+- 볼륨 부트 레코드(VBR)에 포함된 파일 시스템 파라미터 블록
+- 섹터 크기, 클러스터당 섹터 수, MFT 위치 등을 정의
+
+## WinRE - Windows Recovery Environment
+
+- Windows가 정상 부팅되지 않을 때 실행되는 복구 환경
+- 별도 파티션 또는 WIM 파일로 제공
+- 시스템 복원, 시작 복구, 명령 프롬프트, 이미지 복구 등 제공
+
+## ACT - Application Compatibility Toolkit
+
+- 앱 호환성 문제를 진단·수정하는 도구 모음
+- Windows ADK에 포함
+- Compatibility Administrator: 커스텀 SDB 파일 생성 도구
+
+## iSCSI - Internet Small Computer System Interface
+
+- 네트워크(TCP/IP)를 통해 SCSI 명령을 전송하는 프로토콜
+- Winload가 iSCSI 원격 디스크에서 직접 부팅 가능 (Microsoft iSCSI 이니시에이터)
+- SAN(Storage Area Network) 환경에서 활용
+
+## SMBIOS - System Management BIOS
+
+- 시스템 하드웨어 정보(프로세서, 메모리, 시리얼 번호 등)를 OS에 전달하는 표준
+- Winload가 UEFI 서비스를 통해 수집 후 로더 파라미터 블록에 포함
+- `Get-WmiObject Win32_ComputerSystem`으로 일부 SMBIOS 정보 조회 가능
+
+## TxF - Transactional NTFS
+
+- KTM 기반 NTFS 트랜잭션 파일 I/O 기능
+- `CreateFileTransacted`, `MoveFileTransacted` 등 트랜잭션 API
+- CLFS를 로깅 백엔드로 사용
+- Windows Vista~. Windows 8+에서는 레거시로 분류됨
+
+## VSS - Volume Shadow Copy Service
+
+- 파일이 열려 있는 상태에서도 일관성 있는 볼륨 스냅샷을 생성하는 서비스
+- 백업, System Restore(시스템 복원), 이전 버전 기능의 기반
+- 프로바이더(소프트웨어/하드웨어), 요청자(백업 앱), 기록기(VSS 인식 앱)로 구성
+
+## BCDEdit
+
+- BCD(Boot Configuration Data) 데이터베이스를 관리하는 명령줄 도구
+- 부팅 항목 추가·제거, 하이퍼바이저 설정, 디버거 설정, 안전 모드 활성화 등
+- 예시: `bcdedit /set hypervisorschedulertype Core`
+
+## Winresume
+
+- 최대절전 또는 Fast Startup 복원 시 실행되는 OS 로더 역할 모듈
+- UEFI: `winresume.efi` / BIOS: `winresume.exe`
+- Hiberfil.sys에서 커널 상태를 읽어 메모리 복원
